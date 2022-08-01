@@ -44,7 +44,6 @@ def show_bookings(bookings):
                 break
             elif booking[1] == bookings[index][0]:
                 line += "|"
-                x += 1
             else:
                 line += "]"
 
@@ -98,9 +97,23 @@ def main():
     for bookings in bookings_per_room:
         print(bookings, len(bookings))
 
+    print()
+
+    line_1 = ""
+    line_2 = ""
+
+    for i in range(40):
+        first_digit = i // 10
+        second_digit = i % 10
+        line_1 += " " if first_digit == 0 else str(first_digit)
+        line_2 += str(second_digit)
+    print(line_1)
+    print(line_2)
+
     for bookings in bookings_per_room:
         show_bookings(bookings)
 
+    print()
     ungrouped_bookings = ungroup_bookings(bookings_per_room)
 
     grouped_bookings = group_bookings(ungrouped_bookings)
