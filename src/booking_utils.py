@@ -89,6 +89,7 @@ def group_bookings(bookings):
             elif result[j][-1][1] == result[i][0][0]:
                 result[j].extend(result[i])
                 result.pop(i)
+                i -= 1
                 break
             j += 1
         i += 1
