@@ -21,35 +21,49 @@ def generate_bookings():
     return all_bookings
 
 
-def show_bookings(bookings):
-    line = ""
-    index = 0
+def show_bookings(grouped_bookings):
+    line_1 = ""
+    line_2 = ""
 
-    x = 0
-    j = bookings[len(bookings) - 1][1]
-    while x <= j:
-        booking = bookings[index]
+    for i in range(40):
+        first_digit = i // 10
+        second_digit = i % 10
 
-        if x < booking[0]:
-            line += " "
-        elif x == booking[0]:
-            line += "["
-        elif booking[0] < x < booking[1]:
-            line += "="
-        elif x == booking[1]:
-            index += 1
+        line_1 += " " if first_digit == 0 else str(first_digit)
+        line_2 += str(second_digit)
 
-            if index == len(bookings):
-                line += "]"
-                break
-            elif booking[1] == bookings[index][0]:
-                line += "|"
-            else:
-                line += "]"
+    print(line_1)
+    print(line_2)
 
-        x += 1
+    for bookings in grouped_bookings:
+        line = ""
+        index = 0
 
-    print(line)
+        x = 0
+        j = bookings[len(bookings) - 1][1]
+        while x <= j:
+            booking = bookings[index]
+
+            if x < booking[0]:
+                line += " "
+            elif x == booking[0]:
+                line += "["
+            elif booking[0] < x < booking[1]:
+                line += "="
+            elif x == booking[1]:
+                index += 1
+
+                if index == len(bookings):
+                    line += "]"
+                    break
+                elif booking[1] == bookings[index][0]:
+                    line += "|"
+                else:
+                    line += "]"
+
+            x += 1
+
+        print(line)
 
 
 def group_bookings(bookings):
@@ -98,20 +112,7 @@ def main():
         print(bookings, len(bookings))
 
     print()
-
-    line_1 = ""
-    line_2 = ""
-
-    for i in range(40):
-        first_digit = i // 10
-        second_digit = i % 10
-        line_1 += " " if first_digit == 0 else str(first_digit)
-        line_2 += str(second_digit)
-    print(line_1)
-    print(line_2)
-
-    for bookings in bookings_per_room:
-        show_bookings(bookings)
+    show_bookings(bookings_per_room)
 
     print()
     ungrouped_bookings = ungroup_bookings(bookings_per_room)

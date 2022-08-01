@@ -14,6 +14,13 @@ def count_gaps(planning):
             count += (1 - x[y]) * x[y - 1]
     print(count)
 
+def count_gaps_wothout_borders(planning):
+    count = 0
+
+    for row in planning:
+        row_count = 0
+
+
 
 if __name__ == '__main__':
     count_gaps(planning)
