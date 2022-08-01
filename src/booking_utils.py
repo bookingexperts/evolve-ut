@@ -1,7 +1,7 @@
 import random
-from typing import List
 
 rooms = 5
+
 
 def generate_bookings():
     all_bookings = []
@@ -18,17 +18,12 @@ def generate_bookings():
             j = end_date
         all_bookings.append(bookings)
 
-    # for bookings in all_bookings:
-    #     print(bookings)
-
     return all_bookings
 
 
 def show_bookings(bookings):
     line = ""
     index = 0
-
-    # print(bookings)
 
     x = 0
     j = bookings[len(bookings) - 1][1]
@@ -83,19 +78,36 @@ def group_bookings(bookings):
     return result
 
 
-if __name__ == '__main__':
-    all_bookings = generate_bookings()
-    for bookings in all_bookings:
+def ungroup_bookings(grouped_bookings):
+    result = []
+
+    for bookings in grouped_bookings:
+        result.extend(bookings)
+
+    return result
+
+
+def generate_grouped_bookings():
+    bookings_per_room = generate_bookings()
+    bookings = ungroup_bookings(bookings_per_room)
+    return group_bookings(bookings)
+
+
+def main():
+    bookings_per_room = generate_bookings()
+    for bookings in bookings_per_room:
         print(bookings, len(bookings))
 
-    for bookings in all_bookings:
+    for bookings in bookings_per_room:
         show_bookings(bookings)
 
-    ungrouped_bookings = []
-    for bookings in all_bookings:
-        ungrouped_bookings.extend(bookings)
+    ungrouped_bookings = ungroup_bookings(bookings_per_room)
 
     grouped_bookings = group_bookings(ungrouped_bookings)
 
     for bookings in grouped_bookings:
         print(bookings, len(bookings))
+
+
+if __name__ == '__main__':
+    main()
