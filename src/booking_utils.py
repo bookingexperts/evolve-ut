@@ -40,30 +40,35 @@ def show_bookings(grouped_bookings):
         index = 0
 
         x = 0
-        j = bookings[len(bookings) - 1][1]
-        while x <= j:
-            booking = bookings[index]
 
-            if x < booking[0]:
-                line += " "
-            elif x == booking[0]:
-                line += "["
-            elif booking[0] < x < booking[1]:
-                line += "="
-            elif x == booking[1]:
-                index += 1
+        try:
+            j = bookings[-1][1]
+            while x <= j:
+                booking = bookings[index]
 
-                if index == len(bookings):
-                    line += "]"
-                    break
-                elif booking[1] == bookings[index][0]:
-                    line += "|"
-                else:
-                    line += "]"
+                if x < booking[0]:
+                    line += " "
+                elif x == booking[0]:
+                    line += "["
+                elif booking[0] < x < booking[1]:
+                    line += "="
+                elif x == booking[1]:
+                    index += 1
 
-            x += 1
+                    if index == len(bookings):
+                        line += "]"
+                        break
+                    elif booking[1] == bookings[index][0]:
+                        line += "|"
+                    else:
+                        line += "]"
 
-        print(line)
+                x += 1
+
+            print(line)
+        except IndexError:
+            print("No bookings for this room")
+
 
 
 def group_bookings(bookings):
@@ -77,11 +82,11 @@ def group_bookings(bookings):
     while i < len(result):
         j = i + 1
         while j < len(result):
-            if result[i][len(result[i]) - 1][1] == result[j][0][0]:
+            if result[i][-1][1] == result[j][0][0]:
                 result[i].extend(result[j])
                 result.pop(j)
                 j -= 1
-            elif result[j][len(result[j]) - 1][1] == result[i][0][0]:
+            elif result[j][-1][1] == result[i][0][0]:
                 result[j].extend(result[i])
                 result.pop(i)
                 break
