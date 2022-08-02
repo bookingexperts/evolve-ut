@@ -34,35 +34,12 @@ def compute_utilization(solution):
 
 # Print the evaluation of a solution.
 def visualize(solution):
-    total_gaps = 0
-    for x in solution:
-        if x[0] == 0:
-            total_gaps += 1
-        for y in range(1, len(x)):
-            total_gaps += (1 - x[y]) * x[y - 1]
-    print(solution)
-    # print("Total number of vessels: ", len(solution))
-    # print("Total waiting time: ", total_waiting_time)
-    # print("Total costs: €", round(total_costs, 2))
-    # berths = set([vessel.helped_by_berth for vessel in solution])
-    # total_berth_slots_empty = 0
-    # total_berth_handling = 0
-    # for berth in berths:
-    #     for i in range(len(berth.schedule)):
-    #         if berth.schedule[i] == "":
-    #             berth.schedule[i] = "  "
-    #             total_berth_slots_empty += 1
-    #         elif berth.schedule[i] != "XX":
-    #             total_berth_handling += 1
-    #     print("Schedule berth ", berth.id, ": \t", berth.schedule)
-    # print("Total utilization: ", total_berth_handling, total_berth_slots_empty+total_berth_handling, round(total_berth_handling /
-    #       (total_berth_slots_empty + total_berth_handling), 3))
 
+    total_gaps = evaluate(solution)
 
-# Returns the latest end time of a vessel in a solution
-def calculate_makespan(vessels):
-    end_time = -1
-    for vessel in vessels:
-        if vessel.time_left > end_time:
-            end_time = vessel.time_left
-    return end_time
+    print("Total number of rentables: ", len(solution))
+    print("Total gaps: ", total_gaps)
+
+    for rentable in solution:
+        print("Schedule Rentable ", rentable.id, ": \t", rentable.schedule)
+

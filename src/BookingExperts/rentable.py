@@ -5,7 +5,7 @@ class Rentable:
     new_id = itertools.count().__next__
     id: int
 
-    def __init__(self, opening_date, closing_date, nr_rentables):
+    def __init__(self, opening_date, closing_date, nr_rentables, type):
         self.id = Rentable.new_id() % nr_rentables
         self.opening_date = opening_date
         self.closing_date = closing_date

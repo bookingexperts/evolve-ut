@@ -3,6 +3,33 @@ from steepest_descent import steepest_descent
 from support_methods import *
 
 
+def variable_neighbourhood_search(nr_of_iterations, objective_value, all_rentables, all_bookings):
+    best_bookings = all_bookings
+    best_rentables = all_rentables
+    best_cost = objective_value
+    iteration = 0
+    #Calculate an optimum with the current solution
+    while True:
+        iteration += 1
+        print("Calculate local optimum")
+        new_costs, new_bookings, new_rentables = steepest_descent(best_cost, best_bookings, best_rentables)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def variable_neighborhood_search(nr_of_iterations, objective_value, all_vessels):
     best_vessels = all_vessels
     best_costs = objective_value

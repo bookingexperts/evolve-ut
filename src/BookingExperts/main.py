@@ -5,7 +5,7 @@ import time
 from pareto import pareto_search
 from vns import variable_neighborhood_search
 from schedule_obtain import first_come_first_serve
-from evaluation_booking import evaluate, visualize, calculate_makespan
+from evaluation_booking import evaluate, visualize
 
 
 # def run_vns(file):
@@ -15,6 +15,7 @@ from evaluation_booking import evaluate, visualize, calculate_makespan
 
 def run_vns(file):
     pseudo_rentables, pseudo_bookings = first_come_first_serve(file)
+    visualize(pseudo_rentables)
     heuristic_costs, heuristic_rentables = variable_neighborhood_search(10, evaluate(pseudo_rentables), pseudo_rentables, pseudo_bookings)
     visualize(heuristic_rentables)
 
@@ -24,7 +25,6 @@ def run_pareto(file):
     for i, solution in enumerate(pareto_solutions):
         print("Solution ", i + 1, ": ")
         print("Gaps: ", evaluate(solution))
-        print("Makespan: ", calculate_makespan(solution))
 
 
 if __name__ == "__main__":

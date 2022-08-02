@@ -8,23 +8,37 @@ from booking import Booking
 
 
 # Open a file, and read its content according to the format.txt formatting. Return all contents at the end.
+# def read_file(name):
+#     file = open(name, "r")
+#     lines = file.read().splitlines()
+#     number_bookings = int(lines[0])
+#     number_rentables = int(lines[1])
+#     arrival_times_vessels = [int(item) for item in lines[2].split(" ") if item != ""]
+#     leaving_time_vessels = [int(item) for item in lines[5 + number_vessels].split(" ") if item != ""]
+#     opening_times_berths = [int(item) for item in lines[3].split(" ") if item != ""]
+#     closing_times_berths = [int(item) for item in lines[4 + number_vessels].split(" ") if item != ""]
+#     handling_times = []
+#     for line in lines[4: 4 + number_vessels]:
+#         list_per_vessel = line.split(" ")
+#         handling_times.append([int(item) for item in list_per_vessel if item != ""])
+#     handling_costs_berths = [float(item) for item in lines[6 + number_vessels].split(" ") if item != ""]
+#
+#     return number_vessels, number_berths, arrival_times_vessels, leaving_time_vessels, opening_times_berths, \
+#         closing_times_berths, handling_times, handling_costs_berths
+
+
 def read_file(name):
     file = open(name, "r")
     lines = file.read().splitlines()
-    number_vessels = int(lines[0])
-    number_berths = int(lines[1])
-    arrival_times_vessels = [int(item) for item in lines[2].split(" ") if item != ""]
-    leaving_time_vessels = [int(item) for item in lines[5 + number_vessels].split(" ") if item != ""]
-    opening_times_berths = [int(item) for item in lines[3].split(" ") if item != ""]
-    closing_times_berths = [int(item) for item in lines[4 + number_vessels].split(" ") if item != ""]
-    handling_times = []
-    for line in lines[4: 4 + number_vessels]:
-        list_per_vessel = line.split(" ")
-        handling_times.append([int(item) for item in list_per_vessel if item != ""])
-    handling_costs_berths = [float(item) for item in lines[6 + number_vessels].split(" ") if item != ""]
+    number_bookings = int(lines[0])
+    number_rentables = int(lines[1])
+    arrival_dates_bookings = [int(item) for item in lines[2].split(" ") if item != ""]
+    leaving_dates_bookings = [int(item) for item in lines[3].split(" ") if item != ""]
+    opening_dates_rentables = [int(item) for item in lines[4].split(" ") if item != ""]
+    closing_dates_rentables = [int(item) for item in lines[5].split(" ") if item != ""]
 
-    return number_vessels, number_berths, arrival_times_vessels, leaving_time_vessels, opening_times_berths, \
-        closing_times_berths, handling_times, handling_costs_berths
+    return number_bookings, number_rentables, arrival_dates_bookings, leaving_dates_bookings, opening_dates_rentables, \
+        closing_dates_rentables
 
 
 def read_file_with_uniform_distributions(name):
