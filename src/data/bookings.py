@@ -20,45 +20,50 @@ class Booking:
 
     def __str__(self):
         return f'{{id: \'{self.id}\', start_date: \'{self.start_date}\', end_date: \'{self.end_date}\', ' \
-               f'length: \'{self.length}\', rentable_type: \'{self.rentable_type}\', locked_on: \'{self.rentable}\', fixed: \'{self.fixed}\''
+               f'length: \'{self.length}\', rentable_type: \'{self.rentable_type}\', locked_on: \'{self.rentable}\', fixed: \'{self.fixed}\'}}'
 
     def __repr__(self) -> str:
         return str(self)
 
 
 def get_bookings() -> [Booking]:
-    print(_api_key)
-    print(_admin_id)
     headers = {'Accept': 'application/vnd.api+json', 'x-api-key': _api_key}
     params = {'include': 'rentable'}
     address = f'https://api.bookingexperts.nl/v3/administrations/{_admin_id}/agenda_periods'
     request = requests.get(address, params=params, headers=headers)
-    print(request.headers)
-    print(request.text)
-
-    print(request.json())
-    data = request.json()['data']
-    included = request.json()['included']
-    print(data)
-    print(included)
 
     bookings = []
 
-    for period in data:
-        if period['attributes']['type'] == 'ReservationAgendaPeriod':
-            start_date = datetime.strptime(period['attributes']['start_date'], date_format)
-            end_date = datetime.strptime(period['attributes']['end_date'], date_format)
-            rentable_id = period['relationships']['rentable']['data']['id']
+    while True:
+        data = request.json()['data']
+        included = request.json()['included']
+        links = request.json()['links']
 
-            for entry in included:
-                if entry['id'] == rentable_id:
-                    rentable_type = entry['relationships']['category']['data']['id']
-                    break
+        for period in data:
+            if period['attributes']['type'] == 'ReservationAgendaPeriod':
+                start_date = datetime.strptime(period['attributes']['start_date'], date_format)
+                end_date = datetime.strptime(period['attributes']['end_date'], date_format)
+                rentable_id = period['relationships']['rentable']['data']['id']
 
-            booking = Booking(period['id'], start_date, end_date, rentable_type)
-            bookings.append(booking)
-            print(booking)
+                for entry in included:
+                    if entry['id'] == rentable_id:
+                        rentable_type = entry['relationships']['category']['data']['id']
+                        break
+
+                booking = Booking(period['id'], start_date, end_date, rentable_type)
+                bookings.append(booking)
+                print(booking)
+
+        if links['next'] is None:
+            break
+
+        request = requests.get(links['next'], headers=headers)
     return bookings
+
+
+def filter_on_type(rentable_type) -> [Booking]:
+    bookings = get_bookings()
+    return [booking for booking in bookings if booking.rentable_type == rentable_type]
 
 
 def initialize():
