@@ -1,8 +1,9 @@
 import itertools
 
+
 class Rentable:
-    new_id = itertools.count.__next__()
-    id = int
+    new_id = itertools.count().__next__
+    id: int
 
     def __init__(self, opening_date, closing_date, nr_rentables):
         self.id = Rentable.new_id() % nr_rentables
