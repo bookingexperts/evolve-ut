@@ -37,18 +37,13 @@ def first_come_first_serve(name):
     bookings_in_process = []
     handled_bookings = []
     # Create a list of all bookings and rentables
-    all_bookings = [Booking(booking_arrival_date[i], booking_leaving_date[i]) for i in
+    all_bookings = [Booking(i, booking_arrival_date[i], booking_leaving_date[i], 1) for i in
                    range(0, nr_bookings)]
-    all_rentables = [Rentable(rentable_opening_date[j], rentable_closing_date[j], nr_rentables) for j in range(0, nr_rentables)]
+    all_rentables = [Rentable(rentable_opening_date[j], rentable_closing_date[j], nr_rentables, 1) for j in range(0, nr_rentables)]
     last_closing_date = 0
     for j in all_rentables:
-        if last_closing_time < j.closing_date:
-            last_closing_time = j.closing_date
-    # Loop over each timestamp to see which bookings need to be served at what time.
         if last_closing_date < j.closing_date:
             last_closing_date = j.closing_date
-    for i in all_rentables:
-        i.define_closing_date(last_closing_date)
     # Loop over each timestamp to see which bookings need to be served at what date.
     while len(handled_bookings) < nr_bookings:
         current_date += 1

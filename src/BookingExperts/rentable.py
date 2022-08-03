@@ -2,9 +2,8 @@ import itertools
 import sys
 from datetime import datetime
 
-import requests
-
 from booking import Booking
+import requests
 from support_methods import daterange
 
 _api_key = None
