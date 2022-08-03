@@ -1,7 +1,9 @@
 import random
+from datetime import datetime, timedelta
+
 from booking import Booking
 from rentable import Rentable
-from support_methods import read_file
+
 
 def generate_bookings(rooms):
     all_bookings = []
@@ -21,53 +23,60 @@ def generate_bookings(rooms):
     return all_bookings
 
 
+def first_come_first_serve(bookings: [Booking], rentables: [Rentable]):
+    nr_bookings = len(bookings)
+    nr_rentables = len(rentables)
+    booking_arrival_dates = [booking.start_date for booking in bookings]
+    booking_leaving_dates = [booking.end_date for booking in bookings]
+    rentable_opening_dates = [rentable.opening_date for rentable in rentables]
+    rentable_closing_dates = [rentable.closing_date for rentable in rentables]
 
-def first_come_first_serve(name):
-    nr_bookings, nr_rentables, booking_arrival_date, booking_leaving_date, rentable_opening_date, rentable_closing_date \
-        = read_file(name)
     print("Park information:\n" +
           "Number of bookings:", nr_bookings,
           "\nNumber of rentables:", nr_rentables,
-          "\nArrival date of bookings:", booking_arrival_date,
-          "\nLeaving date of bookings:", booking_leaving_date,
-          "\nRentable opening date:", rentable_opening_date,
-          "\nRentable closing date:", rentable_closing_date)
-    current_date = 0
+          "\nArrival date of bookings:", booking_arrival_dates,
+          "\nLeaving date of bookings:", booking_leaving_dates,
+          "\nRentable opening date:", rentable_opening_dates,
+          "\nRentable closing date:", rentable_closing_dates)
+
+    current_date = datetime.now()
+    current_date = current_date.replace(hour=0, minute=0, second=0, microsecond=0)
+    print("current date", current_date)
+
     queue_for_rentables = []
     bookings_in_process = []
     handled_bookings = []
     # Create a list of all bookings and rentables
-    all_bookings = [Booking(i, booking_arrival_date[i], booking_leaving_date[i], 1) for i in
-                   range(0, nr_bookings)]
-    all_rentables = [Rentable(rentable_opening_date[j], rentable_closing_date[j], nr_rentables, 1) for j in range(0, nr_rentables)]
     last_closing_date = 0
-    for j in all_rentables:
-        if last_closing_date < j.closing_date:
+    for j in rentables:
+        # Loop over each timestamp to see which bookings need to be served at what time.
+        if j.closing_date is not None and last_closing_date < j.closing_date:
             last_closing_date = j.closing_date
     # Loop over each timestamp to see which bookings need to be served at what date.
     while len(handled_bookings) < nr_bookings:
-        current_date += 1
+        current_date = current_date + timedelta(days=1)
         print(current_date)
 
         # Add arriving bookings to the queue
         for i in range(0, nr_bookings):
-            if all_bookings[i].arrival_date == current_date:
-                queue_for_rentables.append(all_bookings[i])
+            if bookings[i].start_date == current_date:
+                queue_for_rentables.append(bookings[i])
 
         # Set each rentables to available, if it is available
         for i in range(0, nr_rentables):
-            all_rentables[i].update_availibility(current_date)
+            rentables[i].update_availibility(current_date)
 
         # If there is a queue, loop over each booking in the queue to see if a rentable is available to handle them
         if len(queue_for_rentables) > 0:
             for booking in queue_for_rentables:
-                for rentable in all_rentables:
-                    if rentable.check_compatibility(current_date, booking) and booking.housed_by is None:
+                for rentable in rentables:
+                    if rentable.check_compatibility(booking) and booking.housed_by is None:
                         rentable.fill_planning(booking.id, booking.length, current_date)
                         booking.stay_start(current_date, rentable)
                         bookings_in_process.append(booking)
-                        print("Booking", booking.id, "placed for day", current_date, "until", current_date+booking.length)
-            queue_for_rentables =[booking for booking in queue_for_rentables if booking.housed_by is None]
+                        print("Booking", booking.id, "placed for day", current_date, "until",
+                              current_date + booking.length)
+            queue_for_rentables = [booking for booking in queue_for_rentables if booking.housed_by is None]
 
         # Loop over all bookings that are at a rentable. If they are done, add them to the handled bookings list
         if len(bookings_in_process) > 0:
@@ -75,4 +84,4 @@ def first_come_first_serve(name):
                 if booking.check_end(current_date):
                     handled_bookings.append(booking)
             bookings_in_process = [booking for booking in bookings_in_process if current_date <= booking.leaving_date]
-    return all_rentables, all_bookings
+    return rentables, bookings

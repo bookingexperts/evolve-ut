@@ -30,13 +30,13 @@ class Rentable:
         self.old_schedule = self.schedule.copy()
 
     def update_availibility(self, current_day):
-        if not self.schedule[current_day]:
+        if current_day not in self.schedule.keys() or not self.schedule[current_day]:
             self.availability = True
         else:
             self.availability = False
 
     def check_compatibility(self, booking: Booking):
-        if booking.locked_on != -1 and booking.locked_on != self.id:
+        if booking.fixed and booking.rentable != self.id:
             return False
         if booking.arrival_date < self.opening_date or booking.leaving_date > self.closing_date:
             return False
@@ -85,7 +85,7 @@ def get_rentables() -> {str, Rentable}:
 
             rentable = Rentable(start_date, end_date, rentable_id, rentable_type)
             rentables[rentable_id] = rentable
-            print(rentable)
+            # print(rentable)
 
         if links['next'] is None:
             break
@@ -125,6 +125,35 @@ def initialize():
     global _api_key, _admin_id
     _api_key = sys.argv[1]  # the api-key should be passed as a program argument
     _admin_id = sys.argv[2]  # the administration id should be passed as a program argument
+
+
+def filter_on_type(rentable_type, rentables=None):
+    if rentables is None:
+        rentables = get_rentables()
+
+    return [rentable for rentable in rentables if rentable.type == rentable_type]
+
+
+def get_rentable_types():
+    headers = {'Accept': 'application/vnd.api+json', 'x-api-key': _api_key}
+    address = f'https://api.bookingexperts.nl/v3/administrations/{_admin_id}/categories'
+    request = requests.get(address, headers=headers)
+
+    types = []
+
+    while True:
+        data = request.json()['data']
+        links = request.json()['links']
+
+        for rentable_type in data:
+            types.append(rentable_type['id'])
+
+        if links['next'] is None:
+            break
+
+        request = requests.get(links['next'], headers=headers)
+
+    return types
 
 
 initialize()

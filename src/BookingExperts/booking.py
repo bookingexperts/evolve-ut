@@ -62,7 +62,7 @@ def get_bookings() -> [Booking]:
 
             booking = Booking(period['id'], start_date, end_date, rentable_type)
             bookings.append(booking)
-            print(booking)
+            # print(booking)
 
         if links['next'] is None:
             break
