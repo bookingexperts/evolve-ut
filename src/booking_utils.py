@@ -1,4 +1,5 @@
 import random
+from typing import List
 
 rooms = 5
 
@@ -70,7 +71,6 @@ def show_bookings(grouped_bookings):
             print("No bookings for this room")
 
 
-
 def group_bookings(bookings):
     """Groups bookings where start date and end dates are the same"""
     result = []
@@ -95,6 +95,26 @@ def group_bookings(bookings):
         i += 1
 
     return result
+
+
+def better_group_bookings(bookings: List):
+    bookings = bookings.copy()
+    bookings.sort(key=lambda tup: tup[0])
+    result = []
+
+    i = 0
+    while len(bookings) > 0:
+        lengths = [end - begin for (begin, end) in bookings]
+        previous_end = bookings[0][1]
+        previous_index = 0
+        for i in range(1, len(bookings)):
+            sublengths = [0] * i
+            indices = [-1] * i
+            for k in range(i):
+                if bookings[k][0] == previous_end:
+                    sublengths[k] = lengths[k]
+                    indices[k] = previous_index
+            lengths[i] += max(sublengths)
 
 
 def ungroup_bookings(grouped_bookings):

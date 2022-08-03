@@ -42,6 +42,9 @@ def first_come_first_serve(name):
     all_rentables = [Rentable(rentable_opening_date[j], rentable_closing_date[j], nr_rentables) for j in range(0, nr_rentables)]
     last_closing_date = 0
     for j in all_rentables:
+        if last_closing_time < j.closing_date:
+            last_closing_time = j.closing_date
+    # Loop over each timestamp to see which bookings need to be served at what time.
         if last_closing_date < j.closing_date:
             last_closing_date = j.closing_date
     for i in all_rentables:

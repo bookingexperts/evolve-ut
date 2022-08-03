@@ -1,6 +1,7 @@
 # Create a set of vessels with the characteristics of the other solution
 import itertools
 import random
+from datetime import datetime, timedelta
 
 from rentable import Rentable
 from operators import check_swap_possibility, swap_ships_in_schedule
@@ -157,3 +158,8 @@ def kick_berths_at_index(i, j, nr_vessels, nr_berths, vessel_arriving_time, vess
         berth_times.pop(i)
     return nr_vessels, nr_berths, vessel_arriving_time, vessel_leaving_time, berth_opening_time, berth_closing_time, \
         handling_time, handling_costs
+
+
+def daterange(start_date: datetime, end_date: datetime):
+    for n in range(int((end_date - start_date).days)):
+        yield start_date + timedelta(n)
