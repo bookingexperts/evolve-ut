@@ -15,19 +15,8 @@ def check_swap_possibility(from_rentable, to_rentable, from_booking, to_booking)
         del to_rentable.schedule[date]
 
     # Swap possible?
-    possible_to = False
-    possible_from = False
-
-    for date in daterange(from_booking.start_date, from_booking.end_date):
-        if to_rentable.check_compatibility(from_booking):
-            possible_to = True
-
-    for date in daterange(to_booking.start_date, to_booking.end_date):
-        if from_rentable.check_compatibility(to_booking):
-            possible_from = True
-
     # Swap possible, return true
-    if possible_to and possible_from:
+    if to_rentable.check_compatibility(from_booking) and from_rentable.check_compatibility(to_booking):
         return True
     else:
         from_rentable.schedule = from_rentable.old_schedule

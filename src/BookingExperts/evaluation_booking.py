@@ -51,7 +51,7 @@ def visualize(solution):
         last_local = sorted(rentable.schedule.keys())[-1]
         if last_local > last_date:
             last_date = last_local
-
+    last_date += timedelta(days=1)
     visual += "Day: "
     for date in daterange(current_date, last_date):
         visual += date.strftime("%Y-%m-%d") + " "

@@ -16,7 +16,7 @@ def steepest_descent(objective_value, all_bookings):
         for to_booking_id in range(from_booking_id, nr_bookings):
             temp_bookings = fill_class_dataset_with_new_data(temp_bookings, original_bookings)
             from_booking = temp_bookings[from_booking_id]
-            to_booking= temp_bookings[to_booking_id]
+            to_booking = temp_bookings[to_booking_id]
 
             if check_swap_possibility(from_booking.rentable, to_booking.rentable, from_booking, to_booking):
                 swap_bookings_in_schedule(from_booking.rentable, to_booking.rentable, from_booking, to_booking)
