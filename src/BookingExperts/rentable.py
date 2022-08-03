@@ -1,10 +1,10 @@
 import itertools
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from booking import Booking
 import requests
-from support_methods import daterange
+from operators import daterange
 
 _api_key = None
 _admin_id = None
@@ -16,7 +16,6 @@ class NotAvailableError(Exception):
 
 
 class Rentable:
-    new_id = itertools.count.__next__
     id = int
 
     def __init__(self, opening_date, closing_date, rentable_id, rentable_type):
@@ -36,23 +35,18 @@ class Rentable:
             self.availability = False
 
     def check_compatibility(self, booking: Booking):
-        if booking.fixed and booking.rentable != self.id:
+        if (booking.fixed and booking.rentable != self.id) or \
+                booking.start_date < self.opening_date or (self.closing_date is not None and booking.end_date >= self.closing_date):
             return False
-        if booking.arrival_date < self.opening_date or booking.leaving_date > self.closing_date:
-            return False
-        for date in daterange(booking.arrival_date, booking.leaving_date):
-            if date in self.schedule.keys() and self.schedule[date] is not None:
+
+        for date in daterange(booking.start_date, booking.end_date):
+            if date in self.schedule.keys():
                 return False
         return True
 
     def fill_planning(self, booking: Booking):
-        for date in daterange(booking.arrival_date, booking.leaving_date):
-            if self.check_compatibility(booking):
+        for date in daterange(booking.start_date, booking.end_date):
                 self.schedule[date] = booking
-                self.availability = False
-            else:
-                raise NotAvailableError(
-                    f'This rentable is not available between {booking.arrival_date} and {booking.leaving_date}')
 
     def set_planning_date(self, date: datetime, reason):
         self.schedule[date] = reason

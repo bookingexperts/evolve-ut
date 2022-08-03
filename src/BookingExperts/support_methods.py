@@ -13,8 +13,8 @@ from operators import check_swap_possibility, swap_ships_in_schedule
 #     lines = file.read().splitlines()
 #     number_bookings = int(lines[0])
 #     number_rentables = int(lines[1])
-#     arrival_times_vessels = [int(item) for item in lines[2].split(" ") if item != ""]
-#     leaving_time_vessels = [int(item) for item in lines[5 + number_vessels].split(" ") if item != ""]
+#     start_times_vessels = [int(item) for item in lines[2].split(" ") if item != ""]
+#     end_time_vessels = [int(item) for item in lines[5 + number_vessels].split(" ") if item != ""]
 #     opening_times_berths = [int(item) for item in lines[3].split(" ") if item != ""]
 #     closing_times_berths = [int(item) for item in lines[4 + number_vessels].split(" ") if item != ""]
 #     handling_times = []
@@ -23,7 +23,7 @@ from operators import check_swap_possibility, swap_ships_in_schedule
 #         handling_times.append([int(item) for item in list_per_vessel if item != ""])
 #     handling_costs_berths = [float(item) for item in lines[6 + number_vessels].split(" ") if item != ""]
 #
-#     return number_vessels, number_berths, arrival_times_vessels, leaving_time_vessels, opening_times_berths, \
+#     return number_vessels, number_berths, start_times_vessels, end_time_vessels, opening_times_berths, \
 #         closing_times_berths, handling_times, handling_costs_berths
 
 
@@ -32,12 +32,12 @@ def read_file(name):
     lines = file.read().splitlines()
     number_bookings = int(lines[0])
     number_rentables = int(lines[1])
-    arrival_dates_bookings = [int(item) for item in lines[2].split(" ") if item != ""]
-    leaving_dates_bookings = [int(item) for item in lines[3].split(" ") if item != ""]
+    start_dates_bookings = [int(item) for item in lines[2].split(" ") if item != ""]
+    end_dates_bookings = [int(item) for item in lines[3].split(" ") if item != ""]
     opening_dates_rentables = [int(item) for item in lines[4].split(" ") if item != ""]
     closing_dates_rentables = [int(item) for item in lines[5].split(" ") if item != ""]
 
-    return number_bookings, number_rentables, arrival_dates_bookings, leaving_dates_bookings, opening_dates_rentables, \
+    return number_bookings, number_rentables, start_dates_bookings, end_dates_bookings, opening_dates_rentables, \
         closing_dates_rentables
 
 
@@ -46,8 +46,8 @@ def read_file_with_uniform_distributions(name):
     lines = file.read().splitlines()
     number_vessels = int(lines[0])
     number_berths = int(lines[1])
-    arrival_times_vessels = [int(item) for item in lines[2].split(" ") if item != ""]
-    leaving_time_vessels = [int(item) for item in lines[5 + number_vessels].split(" ") if item != ""]
+    start_times_vessels = [int(item) for item in lines[2].split(" ") if item != ""]
+    end_time_vessels = [int(item) for item in lines[5 + number_vessels].split(" ") if item != ""]
     opening_times_berths = [int(item) for item in lines[3].split(" ") if item != ""]
     closing_times_berths = [int(item) for item in lines[4 + number_vessels].split(" ") if item != ""]
     handling_times = []
@@ -56,22 +56,21 @@ def read_file_with_uniform_distributions(name):
         handling_times.append([int(item) for item in list_per_vessel if item != ""])
     handling_costs_berths = [float(item) for item in lines[6 + number_vessels].split(" ") if item != ""]
 
-    # Add a uniform distribution to the arrival times and the handling times
-    arrival_times_vessels = [arrival_time + round(random.uniform(2, 5)) for arrival_time in arrival_times_vessels]
+    # Add a uniform distribution to the start times and the handling times
+    start_times_vessels = [start_time + round(random.uniform(2, 5)) for start_time in start_times_vessels]
     for i, handling_time in enumerate(handling_times):
         handling_times[i] = [time + round(random.uniform(1, 7)) for time in handling_time]
-    return number_vessels, number_berths, arrival_times_vessels, leaving_time_vessels, opening_times_berths, \
+    return number_vessels, number_berths, start_times_vessels, end_time_vessels, opening_times_berths, \
         closing_times_berths, handling_times, handling_costs_berths
 
 
 def create_backup_solution_bookings(set_of_bookings):
     copy_of_bookings = []
     for booking in set_of_bookings:
-        booking_backup = Booking(booking.arrival_date, booking.leaving_date)
-        booking_backup.id = booking.id
+        booking_backup = Booking(booking.id, booking.start_date, booking.end_date, booking.rentable_type)
         booking_backup.length = booking.length
-        booking_backup.housed_by = booking.housed_by
-        booking_backup.locked_on = booking.locked_on
+        booking_backup.rentable = booking.rentable
+        booking_backup.fixed = booking.fixed
         copy_of_bookings.append(booking_backup)
     return copy_of_bookings
 
@@ -90,10 +89,13 @@ def create_backup_solution_bookings(set_of_bookings):
 
 def fill_class_dataset_with_new_data(old_class_set, new_class_set):
     for item in range(len(old_class_set)):
-        old_class_set[item].arrival_date = new_class_set[item].arrival_date
-        old_class_set[item].leaving_date = new_class_set[item].leaving_date
+        old_class_set[item].id = new_class_set[item].id
+        old_class_set[item].start_date = new_class_set[item].start_date
+        old_class_set[item].end_date = new_class_set[item].end_date
         old_class_set[item].length = new_class_set[item].length
-        old_class_set[item].housed_by = new_class_set[item].housed_by
+        old_class_set[item].rentable = new_class_set[item].rentable
+        old_class_set[item].rentable_type = new_class_set[item].rentable_type
+        old_class_set[item].fixed = new_class_set[item].fixed
     return old_class_set
 
 
@@ -145,7 +147,7 @@ def get_all_neighbours(bookings):
 
 
 
-def kick_berths_at_index(i, j, nr_vessels, nr_berths, vessel_arriving_time, vessel_leaving_time, berth_opening_time,
+def kick_berths_at_index(i, j, nr_vessels, nr_berths, vessel_arriving_time, vessel_end_time, berth_opening_time,
                          berth_closing_time, handling_time, handling_costs):
     nr_berths -= 2
     berth_opening_time.pop(j)
@@ -155,10 +157,7 @@ def kick_berths_at_index(i, j, nr_vessels, nr_berths, vessel_arriving_time, vess
     for berth_times in handling_time:
         berth_times.pop(j)
         berth_times.pop(i)
-    return nr_vessels, nr_berths, vessel_arriving_time, vessel_leaving_time, berth_opening_time, berth_closing_time, \
+    return nr_vessels, nr_berths, vessel_arriving_time, vessel_end_time, berth_opening_time, berth_closing_time, \
         handling_time, handling_costs
 
 
-def daterange(start_date: datetime, end_date: datetime):
-    for n in range(int((end_date - start_date).days)):
-        yield start_date + timedelta(n)
