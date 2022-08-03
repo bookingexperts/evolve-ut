@@ -6,9 +6,24 @@
 #         total_costs += float(vessel.time_left - vessel.arrival_time) * float(vessel.handling_costs)
 #     return round(total_costs, 2)
 
+# def evaluate(planning):
+#     total_gaps = 0
+#     for rentable in planning:
+#         if rentable.schedule[0] == "":
+#             total_gaps += 1
+#         for day in range(1, len(rentable.schedule)):
+#             if rentable.schedule[day] == "" and rentable.schedule[day-1] != "":
+#                 total_gaps += 1
+#         if rentable.schedule[-1] == "":
+#             total_gaps -= 1
+#     return total_gaps
+#
+#
 def evaluate(planning):
+    rentables = set([booking.housed_by for booking in planning])
+    print(rentables)
     total_gaps = 0
-    for rentable in planning:
+    for rentable in rentables:
         if rentable.schedule[0] == "":
             total_gaps += 1
         for day in range(1, len(rentable.schedule)):
@@ -37,9 +52,9 @@ def visualize(solution):
 
     total_gaps = evaluate(solution)
 
-    print("Total number of rentables: ", len(solution))
+    print("Total number of bookings: ", len(solution))
     print("Total gaps: ", total_gaps)
-
-    for rentable in solution:
+    rentables = set([booking.housed_by for booking in solution])
+    for rentable in rentables:
         print("Schedule Rentable ", rentable.id, ": \t", rentable.schedule)
 

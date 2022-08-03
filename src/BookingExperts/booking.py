@@ -19,7 +19,7 @@ class Booking:
     def lock_stay(self, rentable_id):
         self.locked_on = rentable_id
 
-    def check_active(self, current_day):
+    def check_end(self, current_day):
         if current_day == self.arrival_date + self.length:
             return True
         else:

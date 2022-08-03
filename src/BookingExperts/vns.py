@@ -3,80 +3,60 @@ from steepest_descent import steepest_descent
 from support_methods import *
 
 
-def variable_neighbourhood_search(nr_of_iterations, objective_value, all_rentables, all_bookings):
+def variable_neighbourhood_search(nr_of_iterations, objective_value, all_bookings):
     best_bookings = all_bookings
-    best_rentables = all_rentables
-    best_cost = objective_value
+    best_costs = objective_value
     iteration = 0
     #Calculate an optimum with the current solution
     while True:
         iteration += 1
         print("Calculate local optimum")
-        new_costs, new_bookings, new_rentables = steepest_descent(best_cost, best_bookings, best_rentables)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def variable_neighborhood_search(nr_of_iterations, objective_value, all_vessels):
-    best_vessels = all_vessels
-    best_costs = objective_value
-    iteration = 0
-    # Calculate an optimum with the current solution
-    while True:
-        iteration += 1
-        print("Calculate local optimum")
-        new_costs, new_vessels = steepest_descent(best_costs, best_vessels)
+        new_costs, new_bookings = steepest_descent(best_costs, best_bookings)
         if best_costs == new_costs:
             break
-        best_vessels = new_vessels
+        best_bookings = new_bookings
         best_costs = new_costs
 
     print(best_costs)
 
-    # Start looking for new neighborhoods and check if their solution is better
-    original_vessels = best_vessels
-    best_vessels = create_backup_solution_vessels(original_vessels)
+    original_bookings = best_bookings
+    best_bookings = create_backup_solution_bookings(original_bookings)
     iteration = 0
     while iteration < nr_of_iterations:
         iteration += 1
         print("Iteration ", iteration)
-        temp_vessels = create_backup_solution_vessels(original_vessels)
-        swap_vessels = random.sample(temp_vessels, k=2)
-        # Try to find two vessels that can be swapped before continuing.
-        while not check_swap_possibility(swap_vessels[0].helped_by_berth, swap_vessels[1].helped_by_berth,
-                                         swap_vessels[0], swap_vessels[1]):
-            swap_vessels = random.sample(all_vessels, k=2)
-        # Swap the two vessels
-        swap_ships_in_schedule(swap_vessels[0].helped_by_berth, swap_vessels[1].helped_by_berth,
-                               swap_vessels[0], swap_vessels[1])
+        temp_bookings = create_backup_solution_bookings(original_bookings)
+        swap_bookings = random.sample(temp_bookings, k=2)
+        # first get 2 bookings that can be swapped
+        time_out_counter = 0
+        while not check_swap_possibility(swap_bookings[0].housed_by,
+                                         swap_bookings[1].housed_by,
+                                         swap_bookings[0], swap_bookings[1]) and time_out_counter < 250:
+            print("Checking new swap")
+            time_out_counter += 1
+            swap_bookings = random.sample(all_bookings, k = 2)
+        if time_out_counter == 250:
+            break
+        # now swap
+        swap_ships_in_schedule(swap_bookings[0].housed_by,
+                               swap_bookings[1].housed_by,
+                               swap_bookings[0], swap_bookings[1])
 
-        best_costs_new_neighbor = evaluate(temp_vessels)
-        # As long as the new solution is better than the best_seen solution so far, try to improve
+        best_cost_new_neighbor = evaluate(temp_bookings)
+
         while True:
-            new_costs, new_vessels = steepest_descent(best_costs_new_neighbor, temp_vessels)
-            if new_costs == best_costs_new_neighbor:
+            new_costs, new_bookings = steepest_descent(best_cost_new_neighbor, temp_bookings)
+            if new_costs == best_cost_new_neighbor:
+                # No improvement
                 break
-            best_costs_new_neighbor = new_costs
-            temp_vessels = fill_class_dataset_with_new_data(temp_vessels, new_vessels)
-        # If the newly found solution is the best so far, update the best solution
+            best_cost_new_neighbor = new_costs
+            temp_bookings = fill_class_dataset_with_new_data(temp_bookings, new_bookings)
+        #if best compared to other minimum: update solution
         if new_costs < best_costs:
             print(new_costs)
             print(best_costs)
-            best_vessels = fill_class_dataset_with_new_data(best_vessels, temp_vessels)
+            best_bookings = fill_class_dataset_with_new_data(best_bookings, temp_bookings)
             best_costs = new_costs
-            original_vessels = fill_class_dataset_with_new_data(original_vessels, best_vessels)
-    # Return the overall best solution with its costs.
-    return best_costs, best_vessels
+            original_bookings = fill_class_dataset_with_new_data(original_bookings, best_bookings)
+    #Return best solution and costs
+    return best_costs, best_bookings
