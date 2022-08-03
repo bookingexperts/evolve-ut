@@ -3,9 +3,8 @@ import itertools
 import random
 from datetime import datetime, timedelta
 
-from rentable import Rentable
-from operators import check_swap_possibility, swap_ships_in_schedule
 from booking import Booking
+from operators import check_swap_possibility, swap_ships_in_schedule
 
 
 # Open a file, and read its content according to the format.txt formatting. Return all contents at the end.
