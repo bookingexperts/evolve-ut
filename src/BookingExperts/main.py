@@ -16,7 +16,7 @@ from evaluation_booking import evaluate, visualize
 def run_vns(file):
     pseudo_rentables, pseudo_bookings = first_come_first_serve(file)
     visualize(pseudo_bookings)
-    heuristic_costs, heuristic_bookings = variable_neighbourhood_search(10, evaluate(pseudo_bookings), pseudo_bookings)
+    heuristic_costs, heuristic_bookings = variable_neighbourhood_search(1, evaluate(pseudo_bookings), pseudo_bookings)
     visualize(heuristic_bookings)
 
 def run_pareto(file):

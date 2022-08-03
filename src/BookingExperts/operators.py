@@ -1,9 +1,10 @@
 def check_swap_possibility(from_rentable, to_rentable, from_booking, to_booking):
     # Same booking
     if from_booking == to_booking:
-        return False
-    from_rentable.old_schedule = from_rentable.schedule
-    to_rentable.old_schedule = to_rentable.schedule
+        return
+    # Clear schedule
+    from_rentable.old_schedule = from_rentable.schedule.copy()
+    to_rentable.old_schedule = to_rentable.schedule.copy()
     for day in range(from_booking.arrival_date, from_booking.leaving_date):
         from_rentable.schedule[day] = ""
     for day in range(to_booking.arrival_date, to_booking.leaving_date):
@@ -29,6 +30,7 @@ def check_swap_possibility(from_rentable, to_rentable, from_booking, to_booking)
     else:
         from_rentable.schedule = from_rentable.old_schedule
         to_rentable.schedule = to_rentable.old_schedule
+        return False
 
 def swap_bookings_in_schedule(from_rentable, to_rentable, from_booking, to_booking):
 

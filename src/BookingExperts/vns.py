@@ -1,4 +1,4 @@
-from evaluation_booking import evaluate
+from evaluation_booking import evaluate, visualize
 from steepest_descent import steepest_descent
 from support_methods import *
 
@@ -59,4 +59,5 @@ def variable_neighbourhood_search(nr_of_iterations, objective_value, all_booking
             best_costs = new_costs
             original_bookings = fill_class_dataset_with_new_data(original_bookings, best_bookings)
     #Return best solution and costs
+    visualize(best_bookings)
     return best_costs, best_bookings

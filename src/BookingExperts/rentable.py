@@ -15,7 +15,7 @@ class Rentable:
         for j in range(closing_date, len(self.schedule)):
             self.schedule[j] = "XX"
         self.availability = False
-        self.old_schedule = self.schedule
+        self.old_schedule = self.schedule.copy()
 
     def define_closing_date(self, latest_date):
         for i in range(self.closing_date, latest_date):
