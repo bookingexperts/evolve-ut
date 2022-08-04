@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import time
 
-# from Assignment2.beths_utilization import run_beths_utilization
 from pareto import pareto_search
 import booking
 import rentable
@@ -9,11 +8,6 @@ from vns import variable_neighbourhood_search
 from schedule_obtain import first_come_first_serve
 from evaluation_booking import evaluate, visualize
 
-
-# def run_vns(file):
-#     pseudo_berths, pseudo_vessels = first_come_first_serve(file)
-#     heuristic_costs, heuristic_vessels = variable_neighborhood_search(10, evaluate(pseudo_vessels), pseudo_vessels)
-#     visualize(heuristic_vessels)
 
 def run_vns(bookings, rentables):
     for rentable_type in rentable.get_rentable_types():

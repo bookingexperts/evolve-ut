@@ -9,9 +9,9 @@ def check_swap_possibility(from_rentable, to_rentable, from_booking, to_booking)
     from_rentable.old_schedule = from_rentable.schedule.copy()
     to_rentable.old_schedule = to_rentable.schedule.copy()
 
-    for date in daterange(from_booking.start_date, from_booking.end_date-timedelta(days=1)):
+    for date in daterange(from_booking.start_date, from_booking.end_date):
         del from_rentable.schedule[date]
-    for date in daterange(to_booking.start_date, to_booking.end_date-timedelta(days=1)):
+    for date in daterange(to_booking.start_date, to_booking.end_date):
         del to_rentable.schedule[date]
 
     # Swap possible?
