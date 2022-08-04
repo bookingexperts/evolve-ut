@@ -3,7 +3,7 @@ from operators import daterange
 
 
 def evaluate(planning):
-    rentables = set([booking.rentable for booking in planning])
+    rentables = set([booking.rentable_id for booking in planning])
     print(rentables)
     total_gaps = 0
     current_date = datetime.strptime('2022-05-16', '%Y-%m-%d')
@@ -37,7 +37,7 @@ def visualize(solution):
 
     print("Total number of bookings: ", len(solution))
     print("Total gaps: ", total_gaps)
-    rentables = set([booking.rentable for booking in solution])
+    rentables = set([booking.rentable_id for booking in solution])
     for rentable in rentables:
         print("Schedule Rentable ", rentable.id, ": \t", rentable.schedule)
 

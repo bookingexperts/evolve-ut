@@ -18,8 +18,8 @@ def steepest_descent(objective_value, all_bookings):
             from_booking = temp_bookings[from_booking_id]
             to_booking = temp_bookings[to_booking_id]
 
-            if check_swap_possibility(from_booking.rentable, to_booking.rentable, from_booking, to_booking):
-                swap_bookings_in_schedule(from_booking.rentable, to_booking.rentable, from_booking, to_booking)
+            if check_swap_possibility(from_booking.rentable_id, to_booking.rentable_id, from_booking, to_booking):
+                swap_bookings_in_schedule(from_booking.rentable_id, to_booking.rentable_id, from_booking, to_booking)
                 costs = evaluate(temp_bookings)
                 if costs < current_best:
                     nr_swaps += 1

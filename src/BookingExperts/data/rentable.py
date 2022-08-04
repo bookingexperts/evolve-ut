@@ -1,14 +1,7 @@
-import sys
 from datetime import datetime
-
-import requests
 
 from src.BookingExperts.data.booking import Booking
 from src.BookingExperts.operators import daterange
-
-_api_key = None
-_admin_id = None
-date_format = '%Y-%m-%d'
 
 
 class NotAvailableError(Exception):
@@ -35,7 +28,7 @@ class Rentable:
             self.availability = False
 
     def check_compatibility(self, booking: Booking):
-        if (booking.fixed and booking.rentable != self.id) or \
+        if (booking.fixed and booking.rentable_id != self.id) or \
                 booking.start_date < self.opening_date or (
                 self.closing_date is not None and booking.end_date >= self.closing_date):
             return False
@@ -55,17 +48,3 @@ class Rentable:
     def __repr__(self) -> str:
         return f'{{id: \'{self.id}\', opening_date: \'{self.opening_date}, closing_date: \'{self.closing_date}, ' \
                f'type: \'{self.type}}}'
-
-
-
-
-def initialize():
-    global _api_key, _admin_id
-    _api_key = sys.argv[1]  # the api-key should be passed as a program argument
-    _admin_id = sys.argv[2]  # the administration id should be passed as a program argument
-
-
-initialize()
-
-if __name__ == '__main__':
-    get_rentables()

@@ -72,13 +72,13 @@ def first_come_first_serve(bookings: [Booking], rentables: [Rentable]):
         if len(queue_for_rentables) > 0:
             for booking in queue_for_rentables:
                 for rentable in rentables:
-                    if rentable.check_compatibility(booking) and booking.rentable is None:
+                    if rentable.check_compatibility(booking) and booking.rentable_id is None:
                         rentable.fill_planning(booking)
                         booking.stay_start(current_date, rentable)
                         bookings_in_process.append(booking)
                         print("Booking", booking.id, "placed for day", current_date, "until",
                               current_date + booking.length)
-            queue_for_rentables = [booking for booking in queue_for_rentables if booking.rentable is None]
+            queue_for_rentables = [booking for booking in queue_for_rentables if booking.rentable_id is None]
 
         # Loop over all bookings that are at a rentable. If they are done, add them to the handled bookings list
         if len(bookings_in_process) > 0:
