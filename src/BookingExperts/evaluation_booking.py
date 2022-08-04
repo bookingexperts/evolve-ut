@@ -11,7 +11,7 @@ def evaluate(planning):
         print(rentable.schedule)
         schedule = sorted(rentable.schedule.keys())
         for date in daterange(schedule[0], schedule[-1]):
-            if date in rentable.schedule.keys() and date-timedelta(days=1) not in rentable.schedule.keys():
+            if date in rentable.schedule.keys() and date - timedelta(days=1) not in rentable.schedule.keys():
                 total_gaps += 1
         if schedule[-1] is None:
             total_gaps -= 1
@@ -28,14 +28,12 @@ def compute_utilization(solution):
                 total_berth_slots_empty += 1
             elif berth.schedule[i] != "XX":
                 total_berth_handling += 1
-    return total_berth_handling, total_berth_handling+total_berth_slots_empty,
+    return total_berth_handling, total_berth_handling + total_berth_slots_empty,
 
 
 # Print the evaluation of a solution.
 def visualize(solution):
-
     total_gaps = evaluate(solution)
-
 
     print("Total number of bookings: ", len(solution))
     print("Total gaps: ", total_gaps)
