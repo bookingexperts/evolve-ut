@@ -67,7 +67,7 @@ def read_file_with_uniform_distributions(name):
 def create_backup_solution_bookings(set_of_bookings):
     copy_of_bookings = []
     for booking in set_of_bookings:
-        booking_backup = Booking(booking.id, booking.start_date, booking.end_date, booking.rentable_type)
+        booking_backup = Booking(booking.id, booking.start_date, booking.end_date, booking.rentable_type, booking.channel_id, booking.booking_id)
         booking_backup.length = booking.length
         booking_backup.rentable = booking.rentable
         booking_backup.fixed = booking.fixed

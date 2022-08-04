@@ -14,7 +14,7 @@ class Booking:
         self.channel_id = int(channel_id)
         self.booking_id = int(booking_id)
 
-    def stay_start(self, current_day, rentable):
+    def stay_start(self, rentable):
         self.rentable = rentable
 
     def lock_rentable(self, fixed):

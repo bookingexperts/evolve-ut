@@ -123,7 +123,7 @@ def get_rentables() -> {str, Rentable}:
 
             rentable = Rentable(start_date, end_date, rentable_id, rentable_type)
             rentables[rentable_id] = rentable
-            print(rentable)
+            # print(rentable)
 
         if links['next'] is None:
             break
