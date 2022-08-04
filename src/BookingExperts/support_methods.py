@@ -69,7 +69,7 @@ def create_backup_solution_bookings(set_of_bookings):
     for booking in set_of_bookings:
         booking_backup = Booking(booking.id, booking.start_date, booking.end_date, booking.rentable_type, booking.channel_id, booking.booking_id)
         booking_backup.length = booking.length
-        booking_backup.rentable = booking.rentable
+        booking_backup.rentable_id = booking.rentable_id
         booking_backup.fixed = booking.fixed
         copy_of_bookings.append(booking_backup)
     return copy_of_bookings
@@ -93,7 +93,7 @@ def fill_class_dataset_with_new_data(old_class_set, new_class_set):
         old_class_set[item].start_date = new_class_set[item].start_date
         old_class_set[item].end_date = new_class_set[item].end_date
         old_class_set[item].length = new_class_set[item].length
-        old_class_set[item].rentable = new_class_set[item].rentable
+        old_class_set[item].rentable_id = new_class_set[item].rentable_id
         old_class_set[item].rentable_type = new_class_set[item].rentable_type
         old_class_set[item].fixed = new_class_set[item].fixed
     return old_class_set

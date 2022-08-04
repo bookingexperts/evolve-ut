@@ -14,9 +14,8 @@ date_format = '%Y-%m-%d'
 root = 'https://api.bookingexperts.nl/v3'
 temporary_ids = ['92107', '92108', '92109', '92110', '92111']
 
-
 def get_bookings() -> [Booking]:
-    params = {'include': 'reservations'}
+    params = {'include': 'reservations', 'filter[state]': 'confirmed'}
     address = f'{root}/administrations/{_admin_id}/bookings'
     request = requests.get(address, params=params, headers=headers)
 
@@ -40,13 +39,14 @@ def get_bookings() -> [Booking]:
                 rentable_type = reservation_data['relationships']['category']['data']['id']
 
                 fixed = reservation_data['attributes']['fixed_rentable']
-                rentable_id = None
+                cancelled = booking_data['attributes']['state'] == 'cancelled'
+                # rentable_id = None
 
-                if fixed:
-                    rentable_id = reservation_data['relationships']['rentable_identity']['data']['id']
+                # if fixed:
+                rentable_id = reservation_data['relationships']['rentable_identity']['data']['id']
 
                 booking = Booking(reservation_id, start_date, end_date, rentable_type, channel_id, booking_id,
-                                  rentable_id, fixed)
+                                  rentable_id, fixed, cancelled=cancelled)
 
                 bookings.append(booking)
                 print(booking)
@@ -67,16 +67,16 @@ def filter_bookings_on_type(rentable_type, bookings=None) -> [Booking]:
 
 def update_booking_rentable(booking, rentable_id=None):
     if rentable_id is None:
-        rentable_id = booking.rentable.id
+        rentable_id = booking.rentable_id
 
     data = {
         "data": {
-            "id": booking.booking_id,
+            "id": str(booking.id),
             "type": "reservation",
             "relationships": {
                 "rentable_identity": {
                     "data": {
-                        "id": rentable_id,
+                        "id": str(rentable_id),
                         "type": "rentable_identity"
                     }
                 }
@@ -92,10 +92,10 @@ def update_booking_rentable(booking, rentable_id=None):
 
 
 def update_multiple_booking_rentables(bookings: [Booking]):
-    initial_id = bookings[0].rentable.id
+    initial_id = bookings[0].rentable_id.id
 
     for booking in bookings:
-        update_booking_rentable(booking, rentable_id=booking.rentable.id - initial_id)
+        update_booking_rentable(booking, rentable_id=booking.rentable_id.id - initial_id)
 
     for booking in bookings:
         update_booking_rentable(booking)

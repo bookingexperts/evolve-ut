@@ -2,8 +2,8 @@ import requests
 
 
 class Booking:
-    def __init__(self, reservation_id, start_date, end_date, rentable_type, channel_id, booking_id, rentable=None,
-                 fixed=False):
+    def __init__(self, reservation_id, start_date, end_date, rentable_type, channel_id, booking_id, rentable_id=None,
+                 fixed=False, cancelled=False):
         self.id = int(reservation_id)
         self.start_date = start_date
         self.end_date = end_date
@@ -13,6 +13,7 @@ class Booking:
         self.fixed = fixed
         self.channel_id = int(channel_id)
         self.booking_id = int(booking_id)
+        self.cancelled = cancelled
 
     def stay_start(self, rentable):
         self.rentable = rentable
