@@ -1,35 +1,19 @@
-# def evaluate(vessels):
-#     total_waiting_time = 0.0
-#     total_costs = 0.0
-#     for vessel in vessels:
-#         total_waiting_time += vessel.time_accepted - vessel.arrival_time
-#         total_costs += float(vessel.time_left - vessel.arrival_time) * float(vessel.handling_costs)
-#     return round(total_costs, 2)
+from datetime import datetime, timedelta
+from operators import daterange
 
-# def evaluate(planning):
-#     total_gaps = 0
-#     for rentable in planning:
-#         if rentable.schedule[0] == "":
-#             total_gaps += 1
-#         for day in range(1, len(rentable.schedule)):
-#             if rentable.schedule[day] == "" and rentable.schedule[day-1] != "":
-#                 total_gaps += 1
-#         if rentable.schedule[-1] == "":
-#             total_gaps -= 1
-#     return total_gaps
-#
-#
+
 def evaluate(planning):
-    rentables = set([booking.housed_by for booking in planning])
+    rentables = set([booking.rentable for booking in planning])
     print(rentables)
     total_gaps = 0
+    current_date = datetime.strptime('2022-05-16', '%Y-%m-%d')
     for rentable in rentables:
-        if rentable.schedule[0] == "":
-            total_gaps += 1
-        for day in range(1, len(rentable.schedule)):
-            if rentable.schedule[day] == "" and rentable.schedule[day-1] != "":
+        print(rentable.schedule)
+        schedule = sorted(rentable.schedule.keys())
+        for date in daterange(schedule[0], schedule[-1]):
+            if date in rentable.schedule.keys() and date-timedelta(days=1) not in rentable.schedule.keys():
                 total_gaps += 1
-        if rentable.schedule[-1] == "":
+        if schedule[-1] is None:
             total_gaps -= 1
     return total_gaps
 
@@ -52,9 +36,32 @@ def visualize(solution):
 
     total_gaps = evaluate(solution)
 
+
     print("Total number of bookings: ", len(solution))
     print("Total gaps: ", total_gaps)
-    rentables = set([booking.housed_by for booking in solution])
+    rentables = set([booking.rentable for booking in solution])
     for rentable in rentables:
         print("Schedule Rentable ", rentable.id, ": \t", rentable.schedule)
 
+    current_date = datetime.strptime('2022-05-16', '%Y-%m-%d')
+    last_date = current_date
+
+    visual = "Schedule:\n"
+    for rentable in rentables:
+        last_local = sorted(rentable.schedule.keys())[-1]
+        if last_local > last_date:
+            last_date = last_local
+    last_date += timedelta(days=1)
+    visual += "Day: "
+    for date in daterange(current_date, last_date):
+        visual += date.strftime("%Y-%m-%d") + " "
+    visual += "\n"
+    for rentable in rentables:
+        visual += "     "
+        for date in daterange(current_date, last_date):
+            if date in rentable.schedule.keys():
+                visual += "XXXXXXXXXX "
+            else:
+                visual += "           "
+        visual += "\n"
+    print(visual)

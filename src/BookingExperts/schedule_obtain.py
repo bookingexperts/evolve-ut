@@ -39,7 +39,8 @@ def first_come_first_serve(bookings: [Booking], rentables: [Rentable]):
           "\nRentable opening date:", rentable_opening_dates,
           "\nRentable closing date:", rentable_closing_dates)
 
-    current_date = datetime.now()
+    # current_date = datetime.now()
+    current_date = datetime.strptime('2022-05-16', '%Y-%m-%d')
     current_date = current_date.replace(hour=0, minute=0, second=0, microsecond=0)
     print("current date", current_date)
 
@@ -57,6 +58,7 @@ def first_come_first_serve(bookings: [Booking], rentables: [Rentable]):
         current_date = current_date + timedelta(days=1)
         print(current_date)
 
+
         # Add arriving bookings to the queue
         for i in range(0, nr_bookings):
             if bookings[i].start_date == current_date:
@@ -70,18 +72,18 @@ def first_come_first_serve(bookings: [Booking], rentables: [Rentable]):
         if len(queue_for_rentables) > 0:
             for booking in queue_for_rentables:
                 for rentable in rentables:
-                    if rentable.check_compatibility(booking) and booking.housed_by is None:
-                        rentable.fill_planning(booking.id, booking.length, current_date)
+                    if rentable.check_compatibility(booking) and booking.rentable is None:
+                        rentable.fill_planning(booking)
                         booking.stay_start(current_date, rentable)
                         bookings_in_process.append(booking)
                         print("Booking", booking.id, "placed for day", current_date, "until",
                               current_date + booking.length)
-            queue_for_rentables = [booking for booking in queue_for_rentables if booking.housed_by is None]
+            queue_for_rentables = [booking for booking in queue_for_rentables if booking.rentable is None]
 
         # Loop over all bookings that are at a rentable. If they are done, add them to the handled bookings list
         if len(bookings_in_process) > 0:
             for booking in bookings_in_process:
                 if booking.check_end(current_date):
                     handled_bookings.append(booking)
-            bookings_in_process = [booking for booking in bookings_in_process if current_date <= booking.leaving_date]
+            bookings_in_process = [booking for booking in bookings_in_process if current_date <= booking.end_date]
     return rentables, bookings
