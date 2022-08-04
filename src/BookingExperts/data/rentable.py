@@ -3,7 +3,7 @@ from datetime import datetime
 
 import requests
 
-from booking import Booking
+from src.BookingExperts.data.booking import Booking
 from src.BookingExperts.operators import daterange
 
 _api_key = None
