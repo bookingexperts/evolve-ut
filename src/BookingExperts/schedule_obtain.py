@@ -1,8 +1,8 @@
 import random
 from datetime import datetime, timedelta
 
-from booking import Booking
-from rentable import Rentable
+from data.booking import Booking
+from data.rentable import Rentable
 
 
 def generate_bookings(rooms):

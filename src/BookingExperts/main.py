@@ -2,8 +2,8 @@
 import time
 
 from pareto import pareto_search
-import booking
-import rentable
+from data import booking
+from data import rentable
 from vns import variable_neighbourhood_search
 from schedule_obtain import first_come_first_serve
 from evaluation_booking import evaluate, visualize

@@ -3,7 +3,7 @@ import itertools
 import random
 from datetime import datetime, timedelta
 
-from booking import Booking
+from data.booking import Booking
 from operators import check_swap_possibility, swap_ships_in_schedule
 
 
