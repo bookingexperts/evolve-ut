@@ -3,9 +3,8 @@ from datetime import datetime
 
 import requests
 
-from booking import Booking
-
-from rentable import Rentable
+from src.BookingExperts.data.booking import Booking
+from src.BookingExperts.data.rentable import Rentable
 from src.BookingExperts.operators import daterange
 
 _api_key = None
@@ -59,7 +58,7 @@ def get_bookings() -> [Booking]:
     return bookings
 
 
-def filter_on_type(rentable_type, bookings=None) -> [Booking]:
+def filter_bookings_on_type(rentable_type, bookings=None) -> [Booking]:
     if bookings is None:
         bookings = get_bookings()
 
@@ -180,7 +179,7 @@ def get_rentable_types():
     return types
 
 
-def filter_on_type(rentable_type, rentables=None):
+def filter_rentables_on_type(rentable_type, rentables=None):
     if rentables is None:
         rentables = get_rentables()
 
