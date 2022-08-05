@@ -25,7 +25,11 @@ class Booking:
 
     def __str__(self):
         return f'{{id: {self.id}, start_date: {self.start_date}, end_date: {self.end_date}, length: {self.length}, ' \
-               f'rentable_type: {self.rentable_type}, rentable: {self.rentable}, fixed: {self.fixed}}}'
+               f'rentable_type: {self.rentable_type}, rentable: {self.rentable.id}, fixed: {self.fixed}}}'
 
     def __repr__(self) -> str:
         return str(self)
+
+    def copy(self):
+        return Booking(self.id, self.start_date, self.end_date, self.rentable_type, self.booking_id, self.rentable,
+                       self.fixed, self.cancelled)

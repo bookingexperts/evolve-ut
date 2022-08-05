@@ -49,6 +49,24 @@ class Rentable:
     def set_planning_date(self, date: datetime, reason):
         self.schedule[date] = reason
 
+    def get_agenda_periods(self):
+        result = []
+        for event in self.schedule.values():
+            if event not in result:
+                result.append(event)
+
+        result.sort(key=lambda item: item.start_date)
+
+        return result
+
     def __repr__(self) -> str:
         return f'{{id: {self.id}, opening_date: {self.opening_date}, closing_date: {self.closing_date}, ' \
                f'type: {self.type}}}'
+
+
+class BlockedPeriod:
+    def __init__(self, start_date: datetime, end_date: datetime, rentable: Rentable):
+        self.start_date = start_date
+        self.end_date = end_date
+        self.rentable = rentable
+        self.fixed = True

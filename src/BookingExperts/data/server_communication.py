@@ -4,7 +4,7 @@ from datetime import datetime
 import requests
 
 from src.BookingExperts.data.booking import Booking
-from src.BookingExperts.data.rentable import Rentable
+from src.BookingExperts.data.rentable import Rentable, BlockedPeriod
 from src.BookingExperts.operators import daterange
 
 _api_key = None
@@ -24,6 +24,7 @@ def get_bookings() -> [Booking]:
     if _bookings is not None:
         return _bookings
 
+    print(_rentables)
     if _rentables is None:
         _rentables = get_rentables()
 
@@ -57,6 +58,8 @@ def get_bookings() -> [Booking]:
 
                 booking = Booking(reservation_id, start_date, end_date, rentable_type, booking_id,
                                   rentable, fixed, cancelled=cancelled)
+
+                rentable.fill_planning(booking)
 
                 bookings.append(booking)
                 # print(booking)
@@ -108,7 +111,8 @@ def update_multiple_booking_rentables(bookings: [Booking]):
     initial_id = bookings[0].rentable.id
 
     for booking in bookings:
-        update_booking_rentable(booking, rentable_id=booking.rentable.id - initial_id)
+        index = (booking.rentable.id - initial_id) % len(temporary_ids)
+        update_booking_rentable(booking, rentable_id=temporary_ids[index])
 
     for booking in bookings:
         update_booking_rentable(booking)
@@ -170,8 +174,10 @@ def set_blocked_periods(rentables: {str, Rentable}):
             start_date = datetime.strptime(period['attributes']['start_date'], date_format)
             end_date = datetime.strptime(period['attributes']['end_date'], date_format)
 
+            blocked_period = BlockedPeriod(start_date, end_date, rentables[rentable_id])
+
             for date in daterange(start_date, end_date):
-                rentables[rentable_id].set_planning_date(date, 'maintenance')
+                rentables[rentable_id].set_planning_date(date, blocked_period)
 
         if links['next'] is None:
             break
@@ -212,6 +218,10 @@ def main():
     _rentables = get_rentables()
     _bookings = get_bookings()
     print(len(_bookings))
+
+    for rentable in _rentables.values():
+        # print(rentable)
+        print(rentable.get_agenda_periods())
 
 
 def initialize():
