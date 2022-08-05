@@ -54,36 +54,34 @@ def first_come_first_serve(bookings: [Booking], rentables: [Rentable]):
         if j.closing_date is not None and last_closing_date < j.closing_date:
             last_closing_date = j.closing_date
     # Loop over each timestamp to see which bookings need to be served at what date.
-    while len(handled_bookings) < nr_bookings:
+    for booking in bookings:
+        if booking.fixed:
+            print("fixed")
+            rentable = [rentable for rentable in rentables if rentable.id == booking.rentable][0]
+            plan_booking(rentable, booking)
+            handled_bookings.append(booking)
+
+    while len(handled_bookings) < nr_bookings and (current_date < datetime.strptime('2023-03-16', '%Y-%m-%d').replace(hour=0, minute=0, second=0, microsecond=0)):
         current_date = current_date + timedelta(days=1)
         print(current_date)
 
-
-        # Add arriving bookings to the queue
-        for i in range(0, nr_bookings):
-            if bookings[i].start_date == current_date:
-                queue_for_rentables.append(bookings[i])
-
-        # Set each rentables to available, if it is available
-        for i in range(0, nr_rentables):
-            rentables[i].update_availibility(current_date)
+        # Queue booking for bookings
+        for booking in bookings:
+            if booking.start_date == current_date and not booking.fixed:
+                queue_for_rentables.append(booking)
 
         # If there is a queue, loop over each booking in the queue to see if a rentable is available to handle them
         if len(queue_for_rentables) > 0:
             for booking in queue_for_rentables:
                 for rentable in rentables:
-                    if rentable.check_compatibility(booking) and booking.rentable is None:
-                        rentable.fill_planning(booking)
-                        booking.stay_start(current_date, rentable)
-                        bookings_in_process.append(booking)
-                        print("Booking", booking.id, "placed for day", current_date, "until",
-                              current_date + booking.length)
+                    if rentable.check_compatibility(booking) and booking.rentable is not type(Rentable):
+                        plan_booking(rentable, booking)
+                        handled_bookings.append(booking)
             queue_for_rentables = [booking for booking in queue_for_rentables if booking.rentable is None]
-
-        # Loop over all bookings that are at a rentable. If they are done, add them to the handled bookings list
-        if len(bookings_in_process) > 0:
-            for booking in bookings_in_process:
-                if booking.check_end(current_date):
-                    handled_bookings.append(booking)
-            bookings_in_process = [booking for booking in bookings_in_process if current_date <= booking.end_date]
     return rentables, bookings
+
+
+def plan_booking(rentable, booking):
+    rentable.fill_planning(booking)
+    booking.stay_start(rentable)
+    print("Booking", booking.id, "placed for", booking.start_date, "until", booking.end_date)

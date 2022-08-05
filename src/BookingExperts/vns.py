@@ -1,5 +1,5 @@
 from evaluation_booking import evaluate, visualize
-from steepest_descent import steepest_descent
+from steepest_descent import steepest_descent, extended_steepest_descent
 from support_methods import *
 
 
@@ -12,6 +12,7 @@ def variable_neighbourhood_search(nr_of_iterations, objective_value, all_booking
         iteration += 1
         print("Calculate local optimum")
         new_costs, new_bookings = steepest_descent(best_costs, best_bookings)
+        extended_costs, extended_bookings = extended_steepest_descent(best_costs, best_bookings)
         if best_costs == new_costs:
             break
         best_bookings = new_bookings

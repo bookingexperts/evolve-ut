@@ -1,6 +1,7 @@
 from evaluation_booking import evaluate
 from src.BookingExperts.operators import swap_bookings_in_schedule
 from support_methods import *
+from operators import *
 
 
 # Find all possible swaps of vessels that would improve the costs. At the end, return the best solution (the one with
@@ -28,3 +29,62 @@ def steepest_descent(objective_value, all_bookings):
 
     print("Total number of successful swaps:", nr_swaps)
     return current_best, current_best_solution_bookings
+
+
+def extended_steepest_descent(objective_value, all_bookings):
+    if len(all_bookings) < 1:
+        swap_bookings_in_schedule()
+
+    nr_swaps = 0
+    current_best = objective_value
+    original_bookings = all_bookings
+    temp_bookings = create_backup_solution_bookings(original_bookings)
+    current_best_solution_bookings = create_backup_solution_bookings(original_bookings)
+    nr_bookings = len(original_bookings)
+    rentables = set([booking.rentable for booking in all_bookings])
+
+    for from_booking in all_bookings:
+        schedules = []
+
+        for rentable in rentables:
+            for date in daterange(from_booking.start_date, from_booking.end_date):
+                if date in rentable.schedule:
+                    schedules.append(rentable.schedule[date])
+        to_bookings = set([booking for booking in schedules if booking != from_booking])
+
+        for to_booking in to_bookings:
+
+            temp_bookings = fill_class_dataset_with_new_data(temp_bookings, original_bookings)
+            from_booking = temp_bookings[from_booking]
+            to_booking = temp_bookings[to_booking]
+
+            if check_extended_swap_possibility(to_booking.rentable, to_booking, rentables, temp_bookings.delete(to_booking)):
+
+                extended_steepest_descent(objective_value, temp_bookings.delete(to_booking))
+
+                costs = evaluate(temp_bookings)
+            if check_swap_possibility(from_booking.rentable, to_booking.rentable, from_booking, to_booking):
+                swap_bookings_in_schedule(from_booking.rentable, to_booking.rentable, from_booking, to_booking)
+                costs = evaluate(temp_bookings)
+                if costs < current_best:
+                    nr_swaps += 1
+                    current_best = costs
+                    current_best_solution_bookings = fill_class_dataset_with_new_data(current_best_solution_bookings, temp_bookings)
+
+    print("Total number of successful swaps:", nr_swaps)
+    return current_best, current_best_solution_bookings
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -3,18 +3,12 @@ import time
 
 from data import rentable
 from evaluation_booking import evaluate, visualize
-# from Assignment2.beths_utilization import run_beths_utilization
 from pareto import pareto_search
 from schedule_obtain import first_come_first_serve
 from src.BookingExperts.data.server_communication import get_bookings, get_rentables, get_rentable_types, \
     filter_bookings_on_type, filter_rentables_on_type
 from vns import variable_neighbourhood_search
 
-
-# def run_vns(file):
-#     pseudo_berths, pseudo_vessels = first_come_first_serve(file)
-#     heuristic_costs, heuristic_vessels = variable_neighborhood_search(10, evaluate(pseudo_vessels), pseudo_vessels)
-#     visualize(heuristic_vessels)
 
 def run_vns(bookings, rentables):
     for rentable_type in get_rentable_types():
