@@ -74,7 +74,7 @@ def first_come_first_serve(bookings: [Booking], rentables: [Rentable]):
         if len(queue_for_rentables) > 0:
             for booking in queue_for_rentables:
                 for rentable in rentables:
-                    if rentable.check_compatibility(booking) and booking.rentable is None:
+                    if rentable.check_compatibility(booking) and booking.rentable is not type(Rentable):
                         plan_booking(rentable, booking)
                         handled_bookings.append(booking)
             queue_for_rentables = [booking for booking in queue_for_rentables if booking.rentable is None]

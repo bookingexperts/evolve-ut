@@ -28,7 +28,7 @@ class Rentable:
             self.availability = False
 
     def check_compatibility(self, booking: Booking):
-        if (booking.fixed and booking.rentable_id != self.id) or \
+        if (booking.fixed and booking.rentable != self.id) or \
                 booking.start_date < self.opening_date or (
                 self.closing_date is not None and booking.end_date >= self.closing_date):
             return False

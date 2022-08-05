@@ -49,7 +49,7 @@ def get_bookings() -> [Booking]:
                                   rentable_id, fixed, cancelled=cancelled)
 
                 bookings.append(booking)
-                print(booking)
+                # print(booking)
 
         if links['next'] is None:
             break

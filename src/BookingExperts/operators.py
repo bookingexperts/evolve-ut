@@ -79,6 +79,13 @@ def check_extended_swap_possibility(from_rentable, from_booking, all_rentables, 
             return False
     return True
 
+def extended_swap_bookings_in_schedule(from_rentable, to_rentable, from_booking, to_booking):
+
+
+
+
+    to_rentable.fill_planning(from_booking)
+    from_rentable.fill_planning(to_booking)
 
 def swap_bookings_in_schedule(from_rentable, to_rentable, from_booking, to_booking):
 
