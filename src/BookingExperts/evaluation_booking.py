@@ -1,25 +1,31 @@
 from datetime import datetime, timedelta
 
+
+from operators import daterange
+import src.BookingExperts.data.server_communication as comm
+from src.booking_utils import fill_rentable_plannings
+
 def daterange(start_date: datetime, end_date: datetime):
     for n in range(int((end_date - start_date).days)):
         yield start_date + timedelta(n)
-
 
 def evaluate(planning):
     rentables = set([booking.rentable for booking in planning if booking.rentable is not None])
     print(rentables)
     total_gaps = 0
-    current_date = datetime.strptime('2022-05-16', '%Y-%m-%d')
+    biggest_gap = timedelta()
     print(rentables)
     for rentable in rentables:
-        print(rentable.schedule)
-        schedule = sorted(rentable.schedule.keys())
-        for date in daterange(schedule[0], schedule[-1]):
-            if date in rentable.schedule.keys() and date - timedelta(days=1) not in rentable.schedule.keys():
+        schedule = [date for date in sorted(rentable.schedule.keys()) if rentable.schedule[date] is not None]
+        # print(len(schedule), schedule)
+        for i in range(1, len(schedule)):
+            gap_size = schedule[i] - schedule[i - 1] - timedelta(days=1)
+
+            if gap_size >= timedelta(days=1):
                 total_gaps += 1
-        if schedule[-1] is None:
-            total_gaps -= 1
-    return total_gaps
+                biggest_gap = max(biggest_gap, gap_size)
+
+    return total_gaps, biggest_gap
 
 
 def compute_utilization(solution):
@@ -67,3 +73,12 @@ def visualize(solution):
                 visual += "           "
         visual += "\n"
     print(visual)
+
+
+if __name__ == '__main__':
+    print('getting bookings')
+    category = comm.get_rentable_types()[0]
+    bookings = comm.filter_bookings_on_type(category)
+    fill_rentable_plannings(bookings)
+    print('evaluating bookings')
+    print(evaluate(bookings))

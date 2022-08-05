@@ -11,8 +11,8 @@ _api_key = None
 _admin_id = None
 headers = None
 date_format = '%Y-%m-%d'
-root = 'https://api.bookingexperts.nl/v3'
-temporary_ids = ['92107', '92108', '92109', '92110', '92111']
+root = 'https://api.app.ut-evolve.bookingexperts.nl/v3/administrations'
+temporary_ids = ['92076', '92077', '92078', '92079', '92080']
 original_ids = ['90720', '90721', '90722', '90723', '90724']
 _bookings = None
 _rentables = None
@@ -28,7 +28,7 @@ def get_bookings() -> [Booking]:
         _rentables = get_rentables()
 
     params = {'include': 'reservations', 'filter[state]': 'confirmed'}
-    address = f'{root}/administrations/{_admin_id}/bookings'
+    address = f'{root}/{_admin_id}/bookings'
     request = requests.get(address, params=params, headers=headers)
 
     bookings = []
@@ -40,7 +40,6 @@ def get_bookings() -> [Booking]:
 
         for booking_data in data:
             booking_id = booking_data['id']
-            channel_id = booking_data['relationships']['channel']['data']['id']
 
             for reservation in booking_data['relationships']['reservations']['data']:
                 reservation_id = reservation['id']
@@ -52,13 +51,11 @@ def get_bookings() -> [Booking]:
 
                 fixed = reservation_data['attributes']['fixed_rentable']
                 cancelled = booking_data['attributes']['state'] == 'cancelled'
-                # rentable_id = None
 
-                # if fixed:
                 rentable_id = reservation_data['relationships']['rentable_identity']['data']['id']
                 rentable = _rentables[rentable_id]
 
-                booking = Booking(reservation_id, start_date, end_date, rentable_type, channel_id, booking_id,
+                booking = Booking(reservation_id, start_date, end_date, rentable_type, booking_id,
                                   rentable, fixed, cancelled=cancelled)
 
                 bookings.append(booking)
@@ -86,6 +83,9 @@ def update_booking_rentable(booking, rentable_id=None):
         "data": {
             "id": str(booking.id),
             "type": "reservation",
+            "attributes": {
+                "fixed_rentable": booking.fixed
+            },
             "relationships": {
                 "rentable_identity": {
                     "data": {
@@ -97,7 +97,7 @@ def update_booking_rentable(booking, rentable_id=None):
         }
     }
 
-    address = f'{root}/channels/{booking.channel_id}/reservations/{booking.id}'
+    address = f'{root}/{_admin_id}/reservations/{booking.id}'
     request = requests.patch(address, headers=headers, json=data)
 
     if request.status_code != 200:
@@ -118,7 +118,7 @@ def get_rentables() -> {str, Rentable}:
     if _rentables is not None:
         return _rentables
 
-    address = f'https://api.bookingexperts.nl/v3/administrations/{_admin_id}/rentables'
+    address = f'{root}/{_admin_id}/rentables'
     request = requests.get(address, headers=headers)
 
     rentables = {}
@@ -151,17 +151,22 @@ def get_rentables() -> {str, Rentable}:
 
 
 def set_blocked_periods(rentables: {str, Rentable}):
-    params = {'filter[type]': 'MaintenanceAgendaPeriod'}
+    params = {'filter[type]': 'MaintenanceAgendaPeriod', "include": "rentable"}
+    print(rentables)
 
-    address = f'https://api.bookingexperts.nl/v3/administrations/{_admin_id}/agenda_periods'
+    address = f'{root}/{_admin_id}/agenda_periods'
     request = requests.get(address, headers=headers, params=params)
 
     while True:
         data = request.json()['data']
+        included = request.json()['included']
         links = request.json()['links']
 
         for period in data:
             rentable_id = period['relationships']['rentable']['data']['id']
+            rentable = [rentable for rentable in included if rentable['id'] == rentable_id][0]
+            rentable_id = rentable['relationships']['rentable_identity']['data']['id']
+
             start_date = datetime.strptime(period['attributes']['start_date'], date_format)
             end_date = datetime.strptime(period['attributes']['end_date'], date_format)
 
@@ -175,7 +180,7 @@ def set_blocked_periods(rentables: {str, Rentable}):
 
 
 def get_rentable_types():
-    address = f'https://api.bookingexperts.nl/v3/administrations/{_admin_id}/categories'
+    address = f'{root}/{_admin_id}/categories'
     request = requests.get(address, headers=headers)
 
     types = []

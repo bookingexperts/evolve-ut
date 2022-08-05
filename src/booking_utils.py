@@ -1,6 +1,8 @@
 import random
 from typing import List
 
+from src.BookingExperts.data.booking import Booking
+
 rooms = 5
 
 
@@ -147,6 +149,11 @@ def main():
 
     for bookings in grouped_bookings:
         print(bookings, len(bookings))
+
+
+def fill_rentable_plannings(bookings: [Booking]):
+    for booking in bookings:
+        booking.rentable.fill_planning(booking)
 
 
 if __name__ == '__main__':
