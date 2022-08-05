@@ -108,7 +108,8 @@ def update_multiple_booking_rentables(bookings: [Booking]):
     initial_id = bookings[0].rentable.id
 
     for booking in bookings:
-        update_booking_rentable(booking, rentable_id=booking.rentable.id - initial_id)
+        index = (booking.rentable.id - initial_id) % len(temporary_ids)
+        update_booking_rentable(booking, rentable_id=temporary_ids[index])
 
     for booking in bookings:
         update_booking_rentable(booking)
