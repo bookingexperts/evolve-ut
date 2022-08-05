@@ -29,3 +29,7 @@ class Booking:
 
     def __repr__(self) -> str:
         return str(self)
+
+    def copy(self):
+        return Booking(self.id, self.start_date, self.end_date, self.rentable_type, self.booking_id, self.rentable,
+                       self.fixed, self.cancelled)
