@@ -8,11 +8,10 @@ def main(replacements=comm.temporary_ids):
     rentable_type = comm.get_rentable_types()[0]
 
     for booking in comm.filter_bookings_on_type(rentable_type, bookings):
-        if booking.channel_id == 14844:
-            index = (booking.rentable.id - initial) % 5
-            print(index)
-            comm.update_booking_rentable(booking, rentable_id=replacements[index])
+        index = (booking.rentable.id - initial) % 5
+        # print(index)
+        comm.update_booking_rentable(booking, rentable_id=replacements[index])
 
 
 if __name__ == '__main__':
-    main(comm.original_ids)
+    main()
