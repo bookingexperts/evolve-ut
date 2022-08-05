@@ -15,7 +15,8 @@ def run_vns(bookings, rentables):
         pseudo_rentables, pseudo_bookings = first_come_first_serve(filter_bookings_on_type(rentable_type, bookings),
                                                                    filter_rentables_on_type(rentable_type, rentables))
         visualize(pseudo_bookings)
-        heuristic_costs, heuristic_bookings = variable_neighbourhood_search(10, evaluate(pseudo_bookings),
+        gaps, max_gap = evaluate(pseudo_bookings)
+        heuristic_costs, heuristic_bookings = variable_neighbourhood_search(10, gaps, max_gap,
                                                                             pseudo_bookings)
         visualize(heuristic_bookings)
 

@@ -11,10 +11,8 @@ def daterange(start_date: datetime, end_date: datetime):
 
 def evaluate(planning):
     rentables = set([booking.rentable for booking in planning if booking.rentable is not None])
-    print(rentables)
     total_gaps = 0
     biggest_gap = timedelta()
-    print(rentables)
     for rentable in rentables:
         schedule = [date for date in sorted(rentable.schedule.keys()) if rentable.schedule[date] is not None]
         # print(len(schedule), schedule)

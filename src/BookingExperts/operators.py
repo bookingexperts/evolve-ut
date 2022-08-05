@@ -1,7 +1,5 @@
 from datetime import datetime, timedelta
 
-from src.BookingExperts.evaluation_booking import evaluate
-from src.BookingExperts.support_methods import plan_booking
 
 
 def check_swap_possibility(from_rentable, to_rentable, from_booking, to_booking):
@@ -90,7 +88,7 @@ def check_extended_swap_possibility(from_rentable, from_booking, all_rentables, 
 def extended_get_conflicts(from_rentable, all_rentables, from_booking):
     conflicts = {}
     for rentable in all_rentables:
-        if rentable == from_rentable:
+        if rentable is from_rentable:
             continue
         booking_conflicts = get_bookings_in_schedule(rentable, from_booking.start_date, from_booking.end_date)
         if booking_conflicts is not None:
@@ -104,7 +102,7 @@ def get_bookings_in_schedule(rentable, start_date, end_date):
         if date in rentable.schedule:
             booking = rentable.schedule[date]
             if booking.fixed:
-                break
+                return None
             booking_conflicts.append(rentable.schedule[date])
     return set(booking_conflicts)
 
