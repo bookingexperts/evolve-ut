@@ -13,8 +13,20 @@ headers = None
 date_format = '%Y-%m-%d'
 root = 'https://api.bookingexperts.nl/v3'
 temporary_ids = ['92107', '92108', '92109', '92110', '92111']
+original_ids = ['90720', '90721', '90722', '90723', '90724']
+_bookings = None
+_rentables = None
+
 
 def get_bookings() -> [Booking]:
+    global _bookings, _rentables
+
+    if _bookings is not None:
+        return _bookings
+
+    if _rentables is None:
+        _rentables = get_rentables()
+
     params = {'include': 'reservations', 'filter[state]': 'confirmed'}
     address = f'{root}/administrations/{_admin_id}/bookings'
     request = requests.get(address, params=params, headers=headers)
@@ -44,12 +56,13 @@ def get_bookings() -> [Booking]:
 
                 # if fixed:
                 rentable_id = reservation_data['relationships']['rentable_identity']['data']['id']
+                rentable = _rentables[rentable_id]
 
                 booking = Booking(reservation_id, start_date, end_date, rentable_type, channel_id, booking_id,
-                                  rentable_id, fixed, cancelled=cancelled)
+                                  rentable, fixed, cancelled=cancelled)
 
                 bookings.append(booking)
-                print(booking)
+                # print(booking)
 
         if links['next'] is None:
             break
@@ -67,7 +80,7 @@ def filter_bookings_on_type(rentable_type, bookings=None) -> [Booking]:
 
 def update_booking_rentable(booking, rentable_id=None):
     if rentable_id is None:
-        rentable_id = booking.rentable_id
+        rentable_id = booking.rentable
 
     data = {
         "data": {
@@ -92,16 +105,19 @@ def update_booking_rentable(booking, rentable_id=None):
 
 
 def update_multiple_booking_rentables(bookings: [Booking]):
-    initial_id = bookings[0].rentable_id.id
+    initial_id = bookings[0].rentable.id
 
     for booking in bookings:
-        update_booking_rentable(booking, rentable_id=booking.rentable_id.id - initial_id)
+        update_booking_rentable(booking, rentable_id=booking.rentable.id - initial_id)
 
     for booking in bookings:
         update_booking_rentable(booking)
 
 
 def get_rentables() -> {str, Rentable}:
+    if _rentables is not None:
+        return _rentables
+
     address = f'https://api.bookingexperts.nl/v3/administrations/{_admin_id}/rentables'
     request = requests.get(address, headers=headers)
 
@@ -187,9 +203,10 @@ def filter_rentables_on_type(rentable_type, rentables=None):
 
 
 def main():
-    bookings = get_bookings()
-    rentables = get_rentables()
-    print(len(bookings))
+    global _rentables, _bookings
+    _rentables = get_rentables()
+    _bookings = get_bookings()
+    print(len(_bookings))
 
 
 def initialize():

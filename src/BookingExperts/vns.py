@@ -29,8 +29,8 @@ def variable_neighbourhood_search(nr_of_iterations, objective_value, all_booking
         swap_bookings = random.sample(temp_bookings, k=2)
         # first get 2 bookings that can be swapped
         time_out_counter = 0
-        while not check_swap_possibility(swap_bookings[0].rentable_id,
-                                         swap_bookings[1].rentable_id,
+        while not check_swap_possibility(swap_bookings[0].rentable,
+                                         swap_bookings[1].rentable,
                                          swap_bookings[0], swap_bookings[1]) and time_out_counter < 250:
             print("Checking new swap")
             time_out_counter += 1
@@ -38,8 +38,8 @@ def variable_neighbourhood_search(nr_of_iterations, objective_value, all_booking
         if time_out_counter == 250:
             break
         # now swap
-        swap_ships_in_schedule(swap_bookings[0].rentable_id,
-                               swap_bookings[1].rentable_id,
+        swap_ships_in_schedule(swap_bookings[0].rentable,
+                               swap_bookings[1].rentable,
                                swap_bookings[0], swap_bookings[1])
 
         best_cost_new_neighbor = evaluate(temp_bookings)

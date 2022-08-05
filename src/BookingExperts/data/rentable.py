@@ -13,7 +13,7 @@ class Rentable:
 
     def __init__(self, opening_date, closing_date, rentable_id, rentable_type):
         # self.id = Rentable.new_id() % nr_rentables
-        self.id = rentable_id
+        self.id = int(rentable_id)
         self.opening_date = opening_date
         self.closing_date = closing_date
         self.type = rentable_type
@@ -28,7 +28,7 @@ class Rentable:
             self.availability = False
 
     def check_compatibility(self, booking: Booking):
-        if (booking.fixed and booking.rentable_id != self.id) or \
+        if (booking.fixed and booking.rentable != self.id) or \
                 booking.start_date < self.opening_date or (
                 self.closing_date is not None and booking.end_date >= self.closing_date):
             return False
