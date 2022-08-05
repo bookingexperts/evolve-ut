@@ -46,5 +46,5 @@ class Rentable:
         self.schedule[date] = reason
 
     def __repr__(self) -> str:
-        return f'{{id: \'{self.id}\', opening_date: \'{self.opening_date}, closing_date: \'{self.closing_date}, ' \
-               f'type: \'{self.type}}}'
+        return f'{{id: {self.id}, opening_date: {self.opening_date}, closing_date: {self.closing_date}, ' \
+               f'type: {self.type}}}'
