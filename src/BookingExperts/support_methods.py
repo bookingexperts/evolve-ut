@@ -4,6 +4,7 @@ import random
 from datetime import datetime, timedelta
 
 from data.booking import Booking
+from data.rentable import Rentable
 from operators import check_swap_possibility, swap_ships_in_schedule
 
 
@@ -74,6 +75,15 @@ def create_backup_solution_bookings(set_of_bookings):
         copy_of_bookings.append(booking_backup)
     return copy_of_bookings
 
+
+def create_backup_solution_rentable(set_of_rentables):
+    copy_of_rentables = []
+    for rentable in set_of_rentables:
+        rentable_backup = Rentable(rentable.opening_date, rentable.closing_date, rentable.id, rentable.rentable_type)
+        rentable_backup.schedule = rentable.schedule
+        rentable_backup.availability = rentable.availability
+        copy_of_rentables.append(rentable_backup)
+    return copy_of_rentables
 
 
 # Create a set of berths with the characteristics of the other solution
@@ -161,3 +171,7 @@ def kick_berths_at_index(i, j, nr_vessels, nr_berths, vessel_arriving_time, vess
         handling_time, handling_costs
 
 
+def plan_booking(rentable, booking):
+    rentable.fill_planning(booking)
+    booking.stay_start(rentable)
+    print("Booking", booking.id, "placed for", booking.start_date, "until", booking.end_date)

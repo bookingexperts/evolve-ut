@@ -32,8 +32,7 @@ def steepest_descent(objective_value, all_bookings):
 
 
 def extended_steepest_descent(objective_value, all_bookings):
-    if len(all_bookings) < 1:
-        swap_bookings_in_schedule()
+
 
     nr_swaps = 0
     current_best = objective_value
@@ -45,12 +44,19 @@ def extended_steepest_descent(objective_value, all_bookings):
 
     for from_booking in all_bookings:
         schedules = []
+        conflicts = extended_get_conflicts(from_booking.rentable, rentables, from_booking)
 
-        for rentable in rentables:
-            for date in daterange(from_booking.start_date, from_booking.end_date):
-                if date in rentable.schedule:
-                    schedules.append(rentable.schedule[date])
-        to_bookings = set([booking for booking in schedules if booking != from_booking])
+        for conflict in conflicts:
+            print(conflict, conflicts[conflict])
+            if len(conflicts[conflict]) == 0:
+                None
+                # Swap is possible!
+                # Endpoint
+            else:
+                None
+                # Remove conflicted booking(s) from schedule
+                # Put from_booking in this spot, pin it
+                #
 
         for to_booking in to_bookings:
 
@@ -73,6 +79,48 @@ def extended_steepest_descent(objective_value, all_bookings):
 
     print("Total number of successful swaps:", nr_swaps)
     return current_best, current_best_solution_bookings
+
+
+def get_best_swap_descent(og_val, from_booking, remaining_bookings, all_rentables):
+
+    current_best_cost = og_val
+    temp_bookings = create_backup_solution_bookings(remaining_bookings)
+    temp_bookings_original = create_backup_solution_bookings(remaining_bookings)
+    current_best_costwise = create_backup_solution_bookings(remaining_bookings)
+    copy_from_booking = create_backup_solution_bookings([from_booking])[0]
+
+    temp_rentables = create_backup_solution_rentable(all_rentables)
+
+    conflicts = extended_get_conflicts(copy_from_booking.rentable, temp_rentables, from_booking)
+    for conflict in conflicts:
+        temp_bookings = fill_class_dataset_with_new_data(temp_bookings, remaining_bookings)
+        print(conflict, conflicts[conflict])
+        if len(conflicts[conflict]) == 0:
+            None
+            # Swap is possible!
+            # Endpoint
+            plan_booking(conflict, copy_from_booking)
+            new_cost = evaluate(temp_bookings)
+            if new_cost < current_best_cost:
+                current_best_cost = new_cost
+                current_best_costwise = fill_class_dataset_with_new_data(current_best_costwise, temp_bookings)
+        else:
+            for booking in conflicts[conflict]:
+                temp_bookings.remove(booking)
+            plan_booking(conflict, copy_from_booking)
+            for booking in conflicts[conflict]:
+                temp_bookings = get_best_swap_descent(booking,
+                                                      temp_bookings,
+                                                      all_rentables)
+                return temp_bookings
+
+    return
+
+    # Remove conflicted booking(s) from schedule
+    # Put from_booking in this spot, pin it
+    #
+
+
 
 
 

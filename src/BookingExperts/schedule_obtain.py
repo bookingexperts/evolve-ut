@@ -57,7 +57,7 @@ def first_come_first_serve(bookings: [Booking], rentables: [Rentable]):
     for booking in bookings:
         if booking.fixed:
             print("fixed")
-            rentable = [rentable for rentable in rentables if rentable.id == booking.rentable][0]
+            rentable = [rentable for rentable in rentables if rentable == booking.rentable][0]
             plan_booking(rentable, booking)
             handled_bookings.append(booking)
 
