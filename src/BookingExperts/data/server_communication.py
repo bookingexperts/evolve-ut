@@ -11,7 +11,7 @@ _api_key = None
 _admin_id = None
 headers = None
 date_format = '%Y-%m-%d'
-root = 'https://api.app.ut-evolve.bookingexperts.nl/v3'
+root = 'https://api.app.ut-evolve.bookingexperts.nl/v3/administrations'
 temporary_ids = ['92076', '92077', '92078', '92079', '92080']
 original_ids = ['90720', '90721', '90722', '90723', '90724']
 _bookings = None
@@ -28,7 +28,7 @@ def get_bookings() -> [Booking]:
         _rentables = get_rentables()
 
     params = {'include': 'reservations', 'filter[state]': 'confirmed'}
-    address = f'{root}/administrations/{_admin_id}/bookings'
+    address = f'{root}/{_admin_id}/bookings'
     request = requests.get(address, params=params, headers=headers)
 
     bookings = []
@@ -97,7 +97,7 @@ def update_booking_rentable(booking, rentable_id=None):
         }
     }
 
-    address = f'{root}/administrations/{_admin_id}/reservations/{booking.id}'
+    address = f'{root}/{_admin_id}/reservations/{booking.id}'
     request = requests.patch(address, headers=headers, json=data)
 
     if request.status_code != 200:
@@ -118,7 +118,7 @@ def get_rentables() -> {str, Rentable}:
     if _rentables is not None:
         return _rentables
 
-    address = f'{root}/administrations/{_admin_id}/rentables'
+    address = f'{root}/{_admin_id}/rentables'
     request = requests.get(address, headers=headers)
 
     rentables = {}
@@ -154,7 +154,7 @@ def set_blocked_periods(rentables: {str, Rentable}):
     params = {'filter[type]': 'MaintenanceAgendaPeriod', "include": "rentable"}
     print(rentables)
 
-    address = f'{root}/administrations/{_admin_id}/agenda_periods'
+    address = f'{root}/{_admin_id}/agenda_periods'
     request = requests.get(address, headers=headers, params=params)
 
     while True:
@@ -180,7 +180,7 @@ def set_blocked_periods(rentables: {str, Rentable}):
 
 
 def get_rentable_types():
-    address = f'{root}/administrations/{_admin_id}/categories'
+    address = f'{root}/{_admin_id}/categories'
     request = requests.get(address, headers=headers)
 
     types = []
