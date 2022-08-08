@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from src.BookingExperts.data.booking import Booking
 from src.BookingExperts.operators import daterange
@@ -58,6 +58,27 @@ class Rentable:
     def __repr__(self) -> str:
         return f'{{id: {self.id}, opening_date: {self.opening_date}, closing_date: {self.closing_date}, ' \
                f'type: {self.type}}}'
+
+    def get_free_date_ranges(self, start_date, end_date) -> [(datetime, datetime)]:
+        result = []
+        minimum = max(start_date, self.opening_date)
+        occupied_dates = [period for period in self.get_agenda_periods() if period.start_date >= minimum]
+        # print(occupied_dates)
+        if len(occupied_dates) == 0:
+            return [(start_date, end_date)]
+
+        if minimum < occupied_dates[0].start_date:
+            result.append((start_date, occupied_dates[0].start_date))
+
+        for i in range(1, len(occupied_dates)):
+            if occupied_dates[i].start_date - occupied_dates[i - 1].end_date > timedelta(days=1):
+                result.append((occupied_dates[i - 1].end_date, occupied_dates[i].start_date))
+
+        if occupied_dates[-1].end_date < end_date:
+            result.append((occupied_dates[-1].end_date, end_date))
+
+        # print(self.id, result)
+        return result
 
 
 class BlockedPeriod:

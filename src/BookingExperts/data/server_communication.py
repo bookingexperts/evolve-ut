@@ -59,7 +59,8 @@ def get_bookings() -> [Booking]:
                 booking = Booking(reservation_id, start_date, end_date, rentable_type, booking_id,
                                   rentable, fixed, cancelled=cancelled)
 
-                rentable.fill_planning(booking)
+                if booking.fixed:
+                    rentable.fill_planning(booking)
 
                 bookings.append(booking)
                 # print(booking)
@@ -210,7 +211,7 @@ def filter_rentables_on_type(rentable_type, rentables=None):
     if rentables is None:
         rentables = get_rentables()
 
-    return [rentable for rentable in rentables if rentable.type == rentable_type]
+    return [rentable for rentable in rentables.values() if rentable.type == rentable_type]
 
 
 def main():
