@@ -41,7 +41,7 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
     temp_bookings = create_backup_solution_bookings(original_bookings)
     current_best_solution_bookings = create_backup_solution_bookings(original_bookings)
     nr_bookings = len(original_bookings)
-    rentables = list(filter(lambda rentable: rentable.id !=   [booking.rentable for booking in all_bookings]))
+    rentables = list(set([booking.rentable for booking in all_bookings]))
 
 
     for from_booking_iterate in all_bookings:
