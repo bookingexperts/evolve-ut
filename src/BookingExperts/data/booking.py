@@ -31,5 +31,7 @@ class Booking:
         return str(self)
 
     def copy(self):
-        return Booking(self.id, self.start_date, self.end_date, self.rentable_type, self.booking_id, self.rentable,
+        new_booking = Booking(self.id, self.start_date, self.end_date, self.rentable_type, self.booking_id, self.rentable,
                        self.fixed, self.cancelled)
+        new_booking.rentable = self.rentable.deepcopy()
+        return new_booking

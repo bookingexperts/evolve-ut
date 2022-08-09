@@ -68,11 +68,7 @@ def read_file_with_uniform_distributions(name):
 def create_backup_solution_bookings(set_of_bookings):
     copy_of_bookings = []
     for booking in set_of_bookings:
-        booking_backup = Booking(booking.id, booking.start_date, booking.end_date, booking.rentable_type, booking.booking_id)
-        booking_backup.length = booking.length
-        booking_backup.rentable = booking.rentable
-        booking_backup.fixed = booking.fixed
-        copy_of_bookings.append(booking_backup)
+        copy_of_bookings.append(booking.copy())
     return copy_of_bookings
 
 
@@ -80,8 +76,7 @@ def create_backup_solution_rentable(set_of_rentables):
     copy_of_rentables = []
     for rentable in set_of_rentables:
         rentable_backup = Rentable(rentable.opening_date, rentable.closing_date, rentable.id, rentable.type)
-        rentable_backup.schedule = rentable.schedule
-        rentable_backup.availability = rentable.availability
+        rentable_backup.schedule = rentable.schedule.copy()
         copy_of_rentables.append(rentable_backup)
     return copy_of_rentables
 
@@ -116,7 +111,6 @@ def fill_rentable_dataset_with_new_data(old_rentable_set, new_rentable_set):
         old_rentable_set[item].closing_date = new_rentable_set[item].closing_date
         old_rentable_set[item].type = new_rentable_set[item].type
         old_rentable_set[item].schedule = new_rentable_set[item].schedule
-        old_rentable_set[item].availability = new_rentable_set[item].availability
     return old_rentable_set
 
 
