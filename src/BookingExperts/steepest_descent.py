@@ -37,17 +37,17 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
     original_bookings = all_bookings
     temp_bookings = create_backup_solution_bookings(original_bookings)
     current_best_solution_bookings = create_backup_solution_bookings(original_bookings)
-    nr_bookings = len(original_bookings)
-    rentables = list(set([booking.rentable for booking in all_bookings]))
+    rentables = list(set([booking.rentable for booking in temp_bookings]))
 
 
     for from_booking_iterate in all_bookings:
         # print(current_best_gapcount, current_best_max_gap)
         print("Branch: move", from_booking_iterate.id, "to different rentable")
-        temp_bookings = create_backup_solution_bookings(original_bookings)
-        from_booking = create_backup_solution_bookings([from_booking_iterate])[0]
-        from_rentable = from_booking.rentable
-        temp_bookings = list(filter(lambda booking: booking.booking_id != from_booking_iterate.booking_id, temp_bookings))
+        temp_bookings = fill_class_dataset_with_new_data(temp_bookings, original_bookings)
+        from_booking = [booking for booking in temp_bookings if booking.id == from_booking_iterate.id][0]
+        temp_bookings.remove(from_booking)
+        # temp_bookings = list(filter(lambda booking: booking.booking_id != from_booking_iterate.booking_id, temp_bookings))
+
         from_booking.rentable.remove_from_planning(from_booking)
         # print("Attempting to place booking", from_booking.id, "..... (" + str(from_booking.start_date) + " to " + str(from_booking.end_date) + ")" )
         temp_bookings = get_best_swap_descent(objective_gap_count, objective_max_gap, from_booking, temp_bookings, rentables)
@@ -64,13 +64,9 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
 
 
 def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remaining_bookings, all_rentables):
-
     current_best_gapcount = objective_gaps
     current_best_max_gap = objective_max_gap
     temp_bookings = create_backup_solution_bookings(remaining_bookings)
-    temp_bookings_original = create_backup_solution_bookings(remaining_bookings)
-    current_best_bookings_costwise = create_backup_solution_bookings(remaining_bookings)
-    current_best_rentables_costwise = create_backup_solution_rentable((all_rentables))
     copy_from_booking = create_backup_solution_bookings([from_booking])[0]
 
     new_solution = None
@@ -86,8 +82,8 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
         # print("No swap possible anymore")
         return None
     for conflict in conflicts:
+        temp_bookings = fill_class_dataset_with_new_data(temp_bookings, remaining_bookings)
         temp_rentables = fill_rentable_dataset_with_new_data(temp_rentables, temp_temp_rentables)
-        temp_bookings = create_backup_solution_bookings(remaining_bookings) # MAY BE WRONG
         rentable_to = conflict.deepcopy()
         if len(conflicts[conflict]) == 0:
             # print("No conflict, place", from_booking.id, "at rentable", conflict.id)
@@ -97,15 +93,11 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
             temp_bookings.append(copy_from_booking)
             new_gapcount, max_gap = evaluate(temp_bookings)
             # print(new_gapcount, max_gap)
-            if new_gapcount <= current_best_gapcount:
-                if new_gapcount == current_best_gapcount and max_gap <= current_best_max_gap:
-                    pass
+            if new_gapcount < current_best_gapcount or (new_gapcount == current_best_gapcount and max_gap > current_best_max_gap):
                 current_best_gapcount = new_gapcount
                 current_best_max_gap = max_gap
                 new_solution = temp_bookings.copy()
-                # current_best_bookings_costwise = fill_class_dataset_with_new_data(current_best_bookings_costwise, temp_bookings)
                 # print("New optimal situation found!")
-
         else:
             # print("Booking", from_booking.id, " has conflict with rentable:", conflict.id, conflicts[conflict])
             for booking in conflicts[conflict]:
