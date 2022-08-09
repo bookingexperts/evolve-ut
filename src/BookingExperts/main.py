@@ -15,11 +15,12 @@ def run_vns(bookings, rentables):
         bookings_by_type = filter_bookings_on_type(rentable_type, bookings)
         # pseudo_rentables, pseudo_bookings = first_come_first_serve(filter_bookings_on_type(rentable_type, bookings),
         #                                                            filter_rentables_on_type(rentable_type, rentables))
-        visualize(bookings_by_type)
+        # visualize(bookings_by_type)
         # visualize_original_graph(bookings_by_type)
         gaps, max_gap = evaluate(bookings_by_type)
         heuristic_gapcount, heuristic_max_gap, heuristic_bookings = variable_neighbourhood_search(10, gaps, max_gap, bookings_by_type)
         visualize(heuristic_bookings)
+        break
 
 
 def run_pareto(file):

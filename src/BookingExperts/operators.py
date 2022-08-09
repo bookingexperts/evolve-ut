@@ -101,7 +101,7 @@ def get_bookings_in_schedule(rentable, start_date, end_date):
     for date in daterange(start_date, end_date):
         if date in rentable.schedule:
             booking = rentable.schedule[date]
-            if booking.fixed:
+            if booking.placed:
                 return None
             booking_conflicts.append(rentable.schedule[date])
     return set(booking_conflicts)

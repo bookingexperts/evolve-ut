@@ -179,4 +179,4 @@ def kick_berths_at_index(i, j, nr_vessels, nr_berths, vessel_arriving_time, vess
 def plan_booking(rentable, booking):
     rentable.fill_planning(booking)
     booking.stay_start(rentable)
-    print("Booking", booking.id, "placed for", booking.start_date, "until", booking.end_date, "on rentable", rentable.id, "\n")
+    # print("Booking", booking.id, "placed for", booking.start_date, "until", booking.end_date, "on rentable", rentable.id, "\n")

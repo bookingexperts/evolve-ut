@@ -50,7 +50,11 @@ def visualize(solution):
 
     print("Total number of bookings: ", len(solution))
     print("Total gaps: ", total_gaps)
-    rentables = sorted(list(set([booking.rentable for booking in solution if booking.rentable is not None])), key=lambda e: e.id)
+
+    rentables = {}
+    for booking in solution:
+        rentables[booking.rentable.id] = booking.rentable
+    rentables = rentables.values()
     for rentable in rentables:
         print("Schedule Rentable ", rentable.id, ": \t", rentable.schedule)
 
