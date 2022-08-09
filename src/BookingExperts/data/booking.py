@@ -18,6 +18,9 @@ class Booking:
     def lock_rentable(self, fixed):
         self.fixed = fixed
 
+    def place_rentable(self, placed):
+        self.placed = placed or self.fixed
+
     def check_end(self, current_day):
         if current_day == self.start_date + self.length:
             return True
