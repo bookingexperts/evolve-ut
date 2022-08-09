@@ -59,6 +59,8 @@ def get_bookings() -> [Booking]:
                 booking = Booking(reservation_id, start_date, end_date, rentable_type, booking_id,
                                   rentable, fixed, cancelled=cancelled)
 
+                if fixed:
+                    booking.placed = True
                 rentable.fill_planning(booking)
 
                 bookings.append(booking)

@@ -1,6 +1,6 @@
 class Booking:
     def __init__(self, reservation_id, start_date, end_date, rentable_type, booking_id, rentable=None,
-                 fixed=False, cancelled=False):
+                 fixed=False, cancelled=False, placed=False):
         self.id = int(reservation_id)
         self.start_date = start_date
         self.end_date = end_date
@@ -10,6 +10,7 @@ class Booking:
         self.fixed = fixed
         self.booking_id = int(booking_id)
         self.cancelled = cancelled
+        self.placed = placed
 
     def stay_start(self, rentable):
         self.rentable = rentable
