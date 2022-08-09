@@ -85,6 +85,7 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
     for conflict in conflicts:
         temp_rentables = fill_rentable_dataset_with_new_data(temp_rentables, all_rentables)
         temp_bookings = create_backup_solution_bookings(remaining_bookings) # MAY BE WRONG
+        rentable_to = conflict.deepcopy()
         if len(conflicts[conflict]) == 0:
             print("No conflict, place", from_booking.id, "at rentable", conflict.id)
             # Swap is possible!
@@ -106,7 +107,7 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
             for booking in conflicts[conflict]:
                 print("Removing booking", booking.id, "from ", booking.rentable.id)
                 temp_bookings = list(filter(lambda x: x.id != booking.id, temp_bookings))
-                conflict.remove_from_planning(booking)
+                rentable_to.remove_from_planning(booking)
             plan_booking(conflict, copy_from_booking)
             copy_from_booking.lock_rentable(True)
             temp_bookings.append(copy_from_booking)
@@ -141,6 +142,8 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
 
 
 def get_schedule_ready(bookings):
+    pass
+
 
 
 
