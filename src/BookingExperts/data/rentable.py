@@ -79,8 +79,12 @@ class Rentable:
 
     def deepcopy(self):
         copy = Rentable(self.opening_date, self.closing_date, self.id, self.type)
-        copy.schedule = self.schedule.copy()
+        for key, value in self.schedule:
+            copy.schedule[key] = value.copy()
         return copy
+
+    def __hash__(self):
+        return self.id
 
 
 class BlockedPeriod:
@@ -89,3 +93,6 @@ class BlockedPeriod:
         self.end_date = end_date
         self.rentable = rentable
         self.fixed = True
+
+    def copy(self):
+        return BlockedPeriod(self.start_date, self.end_date, self.rentable)
