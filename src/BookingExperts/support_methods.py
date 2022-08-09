@@ -75,9 +75,7 @@ def create_backup_solution_bookings(set_of_bookings):
 def create_backup_solution_rentable(set_of_rentables):
     copy_of_rentables = []
     for rentable in set_of_rentables:
-        rentable_backup = Rentable(rentable.opening_date, rentable.closing_date, rentable.id, rentable.type)
-        rentable_backup.schedule = rentable.schedule.copy()
-        copy_of_rentables.append(rentable_backup)
+        copy_of_rentables.append(rentable.deepcopy())
     return copy_of_rentables
 
 
@@ -101,6 +99,7 @@ def fill_class_dataset_with_new_data(old_class_set, new_class_set):
         old_class_set[item].rentable = new_class_set[item].rentable
         old_class_set[item].rentable_type = new_class_set[item].rentable_type
         old_class_set[item].fixed = new_class_set[item].fixed
+        old_class_set[item].placed = new_class_set[item].placed
     return old_class_set
 
 

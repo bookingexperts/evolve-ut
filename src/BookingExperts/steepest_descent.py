@@ -43,7 +43,7 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
 
     for from_booking_iterate in all_bookings:
         # print(current_best_gapcount, current_best_max_gap)
-        # print("Branch: move", from_booking_iterate.id, "to different rentable")
+        print("Branch: move", from_booking_iterate.id, "to different rentable")
         temp_bookings = create_backup_solution_bookings(original_bookings)
         from_booking = create_backup_solution_bookings([from_booking_iterate])[0]
         from_rentable = from_booking.rentable
@@ -73,8 +73,12 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
     current_best_rentables_costwise = create_backup_solution_rentable((all_rentables))
     copy_from_booking = create_backup_solution_bookings([from_booking])[0]
 
-    temp_rentables = create_backup_solution_rentable(all_rentables)
     new_solution = None
+    temp_rentables = {}
+    for booking in temp_bookings:
+        temp_rentables[booking.rentable.id] = booking.rentable
+    temp_rentables = list(temp_rentables.values())
+    temp_temp_rentables = create_backup_solution_rentable(temp_rentables)
 
     conflicts = extended_get_conflicts(copy_from_booking.rentable, temp_rentables, from_booking)
     # print("Booking", from_booking.id, "has conflicts:", conflicts)
@@ -82,7 +86,7 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
         # print("No swap possible anymore")
         return None
     for conflict in conflicts:
-        temp_rentables = fill_rentable_dataset_with_new_data(temp_rentables, all_rentables)
+        temp_rentables = fill_rentable_dataset_with_new_data(temp_rentables, temp_temp_rentables)
         temp_bookings = create_backup_solution_bookings(remaining_bookings) # MAY BE WRONG
         rentable_to = conflict.deepcopy()
         if len(conflicts[conflict]) == 0:
@@ -107,20 +111,22 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
             for booking in conflicts[conflict]:
                 # print("Removing booking", booking.id, "from ", booking.rentable.id)
                 temp_bookings = list(filter(lambda x: x.id != booking.id, temp_bookings))
-                rentable_to.remove_from_planning(booking)
-            plan_booking(conflict, copy_from_booking)
+                conflict.remove_from_planning(booking)
             copy_from_booking.place_rentable(True)
+            plan_booking(conflict, copy_from_booking)
             temp_bookings.append(copy_from_booking)
             for booking in conflicts[conflict]:
                 # print("Attempting to place booking", booking.id, "..... (" + str(booking.start_date) + " to " + str(booking.end_date) + ")" )
                 temp_bookings = get_best_swap_descent(current_best_gapcount, current_best_max_gap, booking,
                                                       temp_bookings,
-                                                      all_rentables)
+                                                      temp_rentables)
+
                 if temp_bookings is None:
-                    conflict.remove_from_planning(copy_from_booking)
+                    rentable_to.remove_from_planning(copy_from_booking)
                     for booking_back in conflicts[conflict]:
-                        plan_booking(conflict, booking_back)
+                        plan_booking(rentable_to, booking_back)
                     break
+                [booking_placed for booking_placed in temp_bookings if booking_placed.id == booking.id][0].place_rentable(True)
         if temp_bookings is None:
             continue
         solution_found = True
@@ -133,6 +139,8 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
                 current_best_max_gap = max_gap
                 new_solution = temp_bookings
                 # current_best_bookings_costwise = fill_class_dataset_with_new_data(current_best_bookings_costwise, temp_bookings)
+    if new_solution is not None:
+        map(lambda booking: booking.place_rentable(False), new_solution)
     return new_solution
 
     # Remove conflicted booking(s) from schedule
