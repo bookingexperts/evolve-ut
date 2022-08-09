@@ -42,8 +42,8 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
 
 
     for from_booking_iterate in all_bookings:
-        print(current_best_gapcount, current_best_max_gap)
-        print("Branch: move", from_booking_iterate.id, "to different rentable")
+        # print(current_best_gapcount, current_best_max_gap)
+        # print("Branch: move", from_booking_iterate.id, "to different rentable")
         temp_bookings = create_backup_solution_bookings(original_bookings)
         from_booking = create_backup_solution_bookings([from_booking_iterate])[0]
         from_rentable = from_booking.rentable
@@ -92,7 +92,7 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
             plan_booking(conflict, copy_from_booking)
             temp_bookings.append(copy_from_booking)
             new_gapcount, max_gap = evaluate(temp_bookings)
-            print(new_gapcount, max_gap)
+            # print(new_gapcount, max_gap)
             if new_gapcount <= current_best_gapcount:
                 if new_gapcount == current_best_gapcount and max_gap <= current_best_max_gap:
                     pass
@@ -100,7 +100,7 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
                 current_best_max_gap = max_gap
                 new_solution = temp_bookings.copy()
                 # current_best_bookings_costwise = fill_class_dataset_with_new_data(current_best_bookings_costwise, temp_bookings)
-                print("New optimal situation found!")
+                # print("New optimal situation found!")
 
         else:
             # print("Booking", from_booking.id, " has conflict with rentable:", conflict.id, conflicts[conflict])

@@ -84,4 +84,4 @@ def first_come_first_serve(bookings: [Booking], rentables: [Rentable]):
 def plan_booking(rentable, booking):
     rentable.fill_planning(booking)
     booking.stay_start(rentable)
-    print("Booking", booking.id, "placed for", booking.start_date, "until", booking.end_date)
+    # print("Booking", booking.id, "placed for", booking.start_date, "until", booking.end_date)

@@ -19,7 +19,7 @@ class Booking:
         self.fixed = fixed
 
     def place_rentable(self, placed):
-        self.placed = placed
+        self.placed = placed or self.fixed
 
     def check_end(self, current_day):
         if current_day == self.start_date + self.length:
@@ -36,6 +36,6 @@ class Booking:
 
     def copy(self):
         new_booking = Booking(self.id, self.start_date, self.end_date, self.rentable_type, self.booking_id, self.rentable,
-                       self.fixed, self.cancelled)
+                       self.fixed, self.cancelled, self.placed)
         new_booking.rentable = self.rentable.deepcopy()
         return new_booking
