@@ -79,8 +79,7 @@ class Rentable:
 
     def deepcopy(self):
         copy = Rentable(self.opening_date, self.closing_date, self.id, self.type)
-        for key, value in self.schedule.items():
-            copy.schedule[key] = value.copy()
+        copy.schedule = self.schedule.copy()
         return copy
 
     def __hash__(self):
