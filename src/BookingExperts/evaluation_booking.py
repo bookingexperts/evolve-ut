@@ -50,7 +50,7 @@ def visualize(solution):
 
     print("Total number of bookings: ", len(solution))
     print("Total gaps: ", total_gaps)
-    rentables = set([booking.rentable for booking in solution if booking.rentable is not None])
+    rentables = sorted(list(set([booking.rentable for booking in solution if booking.rentable is not None])), key=lambda e: e.id)
     for rentable in rentables:
         print("Schedule Rentable ", rentable.id, ": \t", rentable.schedule)
 
@@ -71,7 +71,16 @@ def visualize(solution):
         visual += "     "
         for date in daterange(current_date, last_date):
             if date in rentable.schedule.keys():
-                visual += "XXXXXXXXXX "
+                if rentable.schedule[date].fixed:
+                    visual += "FFFFFFFFFF"
+                else:
+                    visual += "XXXXXXXXXX"
+
+                if rentable.schedule[date].end_date - date <= timedelta(days=1):
+                    visual += "|"
+                else:
+                    visual += " "
+
             else:
                 visual += "           "
         visual += "\n"
