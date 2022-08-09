@@ -88,7 +88,7 @@ def check_extended_swap_possibility(from_rentable, from_booking, all_rentables, 
 def extended_get_conflicts(from_rentable, all_rentables, from_booking):
     conflicts = {}
     for rentable in all_rentables:
-        if rentable is from_rentable:
+        if rentable.id == from_rentable.id:
             continue
         booking_conflicts = get_bookings_in_schedule(rentable, from_booking.start_date, from_booking.end_date)
         if booking_conflicts is not None:
