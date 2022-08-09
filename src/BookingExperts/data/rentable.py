@@ -86,6 +86,15 @@ class Rentable:
     def __hash__(self):
         return self.id
 
+    def __eq__(self, other):
+        if isinstance(other, Rentable):
+            return self.__hash__() == other.__hash__()
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
 
 class BlockedPeriod:
     def __init__(self, start_date: datetime, end_date: datetime, rentable: Rentable):
