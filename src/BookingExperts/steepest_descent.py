@@ -32,9 +32,6 @@ def steepest_descent(objective_value, all_bookings):
 
 
 def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookings):
-
-
-    nr_swaps = 0
     current_best_gapcount = objective_gap_count
     current_best_max_gap = objective_max_gap
     original_bookings = all_bookings
@@ -63,8 +60,6 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
             current_best_gapcount = new_gapcount
             current_best_max_gap = max_gap
             current_best_solution_bookings = fill_class_dataset_with_new_data(current_best_solution_bookings, temp_bookings)
-
-    print("Total number of successful swaps:", nr_swaps)
     return current_best_gapcount, current_best_max_gap, current_best_solution_bookings
 
 

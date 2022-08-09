@@ -18,7 +18,7 @@ def run_vns(bookings, rentables):
         visualize(bookings_by_type)
         # visualize_original_graph(bookings_by_type)
         gaps, max_gap = evaluate(bookings_by_type)
-        heuristic_costs, heuristic_bookings = variable_neighbourhood_search(10, gaps, max_gap, bookings_by_type)
+        heuristic_gapcount, heuristic_max_gap, heuristic_bookings = variable_neighbourhood_search(10, gaps, max_gap, bookings_by_type)
         visualize(heuristic_bookings)
 
 
