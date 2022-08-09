@@ -49,17 +49,19 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
         # temp_bookings = list(filter(lambda booking: booking.booking_id != from_booking_iterate.booking_id, temp_bookings))
 
         from_booking.rentable.remove_from_planning(from_booking)
-        # print("Attempting to place booking", from_booking.id, "..... (" + str(from_booking.start_date) + " to " + str(from_booking.end_date) + ")" )
-        temp_bookings = get_best_swap_descent(objective_gap_count, objective_max_gap, from_booking, temp_bookings, rentables)
-        if temp_bookings is None:
+        recursive_answer = get_best_swap_descent(current_best_gapcount, current_best_max_gap, from_booking,
+                                                 temp_bookings,
+                                                 rentables)
+        if recursive_answer is None:
             continue
-        new_gapcount, max_gap = evaluate(temp_bookings)
-        if new_gapcount <= current_best_gapcount:
-            if new_gapcount == current_best_gapcount and max_gap <= current_best_max_gap:
-                pass
-            current_best_gapcount = new_gapcount
-            current_best_max_gap = max_gap
-            current_best_solution_bookings = fill_class_dataset_with_new_data(current_best_solution_bookings, temp_bookings)
+        else:
+            new_gapcount, max_gap = evaluate(recursive_answer)
+            # print(new_gapcount, max_gap)
+            if new_gapcount < current_best_gapcount or (
+                    new_gapcount == current_best_gapcount and max_gap > current_best_max_gap):
+                current_best_gapcount = new_gapcount
+                current_best_max_gap = max_gap
+                current_best_solution_bookings = fill_class_dataset_with_new_data(current_best_solution_bookings, recursive_answer)
     return current_best_gapcount, current_best_max_gap, current_best_solution_bookings
 
 
@@ -82,21 +84,19 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
         # print("No swap possible anymore")
         return None
     for conflict in conflicts:
+        possible_solution = None
+        answer_possible = False
         temp_bookings = fill_class_dataset_with_new_data(temp_bookings, remaining_bookings)
         temp_rentables = fill_rentable_dataset_with_new_data(temp_rentables, temp_temp_rentables)
         rentable_to = conflict.deepcopy()
         if len(conflicts[conflict]) == 0:
+            answer_possible = True
             # print("No conflict, place", from_booking.id, "at rentable", conflict.id)
             # Swap is possible!
             # Endpoint
             possible_solution = create_backup_solution_bookings(temp_bookings)
             possible_solution.append(copy_from_booking)
-            new_gapcount, max_gap = evaluate(possible_solution)
-            # print(new_gapcount, max_gap)
-            if new_gapcount < current_best_gapcount or (new_gapcount == current_best_gapcount and max_gap > current_best_max_gap):
-                current_best_gapcount = new_gapcount
-                current_best_max_gap = max_gap
-                new_solution = possible_solution.copy()
+
                 # print("New optimal situation found!")
         else:
             # print("Booking", from_booking.id, " has conflict with rentable:", conflict.id, conflicts[conflict])
@@ -109,32 +109,35 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
             temp_bookings.append(copy_from_booking)
             for booking in conflicts[conflict]:
                 # print("Attempting to place booking", booking.id, "..... (" + str(booking.start_date) + " to " + str(booking.end_date) + ")" )
-                temp_bookings = get_best_swap_descent(current_best_gapcount, current_best_max_gap, booking,
+                recursive_answer = get_best_swap_descent(current_best_gapcount, current_best_max_gap, booking,
                                                       temp_bookings,
                                                       temp_rentables)
 
-                if temp_bookings is None:
+                if recursive_answer is None:
+                    answer_possible = False
                     conflict.remove_from_planning(copy_from_booking)
                     for booking_back in conflicts[conflict]:
                         plan_booking(conflict, booking_back)
                     break
-                [booking_placed for booking_placed in temp_bookings if booking_placed.id == booking.id][0].place_rentable(True)
-        if temp_bookings is None:
+                else:
+                    temp_bookings = recursive_answer
+                    answer_possible = True
+                    [booking_placed for booking_placed in recursive_answer if booking_placed.id == booking.id][0].place_rentable(True)
+            possible_solution = temp_bookings.copy()
+            temp_bookings.pop(-1)
+        if not answer_possible:
             continue
-        solution_found = True
-        new_gapcount, max_gap = evaluate(temp_bookings)
-        if new_gapcount <= current_best_gapcount:
-            if new_gapcount == current_best_gapcount and max_gap <= current_best_max_gap:
-                None  # Dont do anything, not better
-            else:
-                current_best_gapcount = new_gapcount
-                current_best_max_gap = max_gap
-                new_solution = temp_bookings
-                # current_best_bookings_costwise = fill_class_dataset_with_new_data(current_best_bookings_costwise, temp_bookings)
+        if possible_solution is not None:
+            new_gapcount, max_gap = evaluate(possible_solution)
+            # print(new_gapcount, max_gap)
+            if new_gapcount < current_best_gapcount or (
+                    new_gapcount == current_best_gapcount and max_gap > current_best_max_gap):
+                new_solution = possible_solution.copy()
+                map(lambda booking: booking.place_rentable(False), new_solution)
     if new_solution is not None:
-        map(lambda booking: booking.place_rentable(False), new_solution)
-    return new_solution
-
+        return new_solution
+    else:
+        return None
     # Remove conflicted booking(s) from schedule
     # Put from_booking in this spot, pin it
     #
