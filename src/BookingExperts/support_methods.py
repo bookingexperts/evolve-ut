@@ -4,6 +4,7 @@ import random
 from datetime import datetime, timedelta
 
 from data.booking import Booking
+from data.rentable import Rentable
 from operators import check_swap_possibility, swap_ships_in_schedule
 
 
@@ -67,13 +68,22 @@ def read_file_with_uniform_distributions(name):
 def create_backup_solution_bookings(set_of_bookings):
     copy_of_bookings = []
     for booking in set_of_bookings:
-        booking_backup = Booking(booking.id, booking.start_date, booking.end_date, booking.rentable_type, booking.channel_id, booking.booking_id)
+        booking_backup = Booking(booking.id, booking.start_date, booking.end_date, booking.rentable_type, booking.booking_id)
         booking_backup.length = booking.length
         booking_backup.rentable = booking.rentable
         booking_backup.fixed = booking.fixed
         copy_of_bookings.append(booking_backup)
     return copy_of_bookings
 
+
+def create_backup_solution_rentable(set_of_rentables):
+    copy_of_rentables = []
+    for rentable in set_of_rentables:
+        rentable_backup = Rentable(rentable.opening_date, rentable.closing_date, rentable.id, rentable.type)
+        rentable_backup.schedule = rentable.schedule
+        rentable_backup.availability = rentable.availability
+        copy_of_rentables.append(rentable_backup)
+    return copy_of_rentables
 
 
 # Create a set of berths with the characteristics of the other solution
@@ -97,6 +107,17 @@ def fill_class_dataset_with_new_data(old_class_set, new_class_set):
         old_class_set[item].rentable_type = new_class_set[item].rentable_type
         old_class_set[item].fixed = new_class_set[item].fixed
     return old_class_set
+
+
+def fill_rentable_dataset_with_new_data(old_rentable_set, new_rentable_set):
+    for item in range(len(old_rentable_set)):
+        old_rentable_set[item].id = new_rentable_set[item].id
+        old_rentable_set[item].opening_date = new_rentable_set[item].opening_date
+        old_rentable_set[item].closing_date = new_rentable_set[item].closing_date
+        old_rentable_set[item].type = new_rentable_set[item].type
+        old_rentable_set[item].schedule = new_rentable_set[item].schedule
+        old_rentable_set[item].availability = new_rentable_set[item].availability
+    return old_rentable_set
 
 
 # Computes a list of all neighbouring solutions where two vessels are swapped
@@ -161,3 +182,7 @@ def kick_berths_at_index(i, j, nr_vessels, nr_berths, vessel_arriving_time, vess
         handling_time, handling_costs
 
 
+def plan_booking(rentable, booking):
+    rentable.fill_planning(booking)
+    booking.stay_start(rentable)
+    print("Booking", booking.id, "placed for", booking.start_date, "until", booking.end_date, "on rentable", rentable.id, "\n")

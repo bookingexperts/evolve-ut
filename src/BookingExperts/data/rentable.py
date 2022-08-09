@@ -35,6 +35,10 @@ class Rentable:
         for date in daterange(booking.start_date, booking.end_date):
             self.schedule[date] = booking
 
+    def remove_from_planning(self, booking: Booking):
+        for date in daterange(booking.start_date, booking.end_date):
+            del self.schedule[date]
+
     def set_planning_date(self, date: datetime, reason):
         self.schedule[date] = reason
 

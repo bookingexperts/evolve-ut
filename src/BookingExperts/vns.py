@@ -3,22 +3,30 @@ from steepest_descent import steepest_descent, extended_steepest_descent
 from support_methods import *
 
 
-def variable_neighbourhood_search(nr_of_iterations, objective_value, all_bookings):
+def variable_neighbourhood_search(nr_of_iterations, objective_gapcount, objective_max_gap, all_bookings):
     best_bookings = all_bookings
-    best_costs = objective_value
+    best_gapcount = objective_gapcount
+    best_max_gap = objective_max_gap
     iteration = 0
     #Calculate an optimum with the current solution
     while True:
         iteration += 1
         print("Calculate local optimum")
-        new_costs, new_bookings = steepest_descent(best_costs, best_bookings)
-        extended_costs, extended_bookings = extended_steepest_descent(best_costs, best_bookings)
-        if best_costs == new_costs:
-            break
-        best_bookings = new_bookings
-        best_costs = new_costs
 
-    print(best_costs)
+        extended_gapcount, extended_max_gap, extended_bookings = extended_steepest_descent(best_gapcount, best_max_gap, all_bookings)
+        if (extended_gapcount, extended_max_gap) == (best_gapcount, best_max_gap):
+            break
+        best_gapcount = extended_gapcount
+        best_max_gap = extended_max_gap
+        print(best_gapcount, best_max_gap)
+
+        # new_costs, new_bookings = steepest_descent(best_costs, best_bookings)
+        # if best_costs == new_costs:
+        #     break
+        # best_bookings = new_bookings
+        # best_costs = new_costs
+
+    # print(best_costs)
 
     original_bookings = best_bookings
     best_bookings = create_backup_solution_bookings(original_bookings)

@@ -1,17 +1,25 @@
+import itertools
 from datetime import datetime, timedelta
+
+
 from operators import daterange
 import src.BookingExperts.data.server_communication as comm
 from src.booking_utils import fill_rentable_plannings
+import networkx as nx
+import matplotlib.pyplot as plt
 
+def daterange(start_date: datetime, end_date: datetime):
+    for n in range(int((end_date - start_date).days)):
+        yield start_date + timedelta(n)
 
 def evaluate(planning):
-    rentables = set([booking.rentable for booking in planning if booking.rentable is not None])
-    print(rentables)
+    rentables = {}
+    for booking in planning:
+        rentables[booking.rentable.id] = booking.rentable
     total_gaps = 0
     biggest_gap = timedelta()
-    print(rentables)
     for rentable in rentables:
-        schedule = [date for date in sorted(rentable.schedule.keys()) if rentable.schedule[date] is not None]
+        schedule = [date for date in sorted(rentables[rentable].schedule.keys()) if rentables[rentable].schedule[date] is not None]
         # print(len(schedule), schedule)
         for i in range(1, len(schedule)):
             gap_size = schedule[i] - schedule[i - 1] - timedelta(days=1)
@@ -77,6 +85,17 @@ def visualize(solution):
                 visual += "           "
         visual += "\n"
     print(visual)
+
+
+def visualize_original_graph(bookings):
+    network = nx.Graph()
+    network.add_nodes_from(bookings)
+    for booking1, booking2 in itertools.combinations(bookings, 2):
+        if booking1.start_date <= booking2.start_date < booking1.end_date or booking2.start_date <= booking1.start_date < booking2.end_date:
+            network.add_edge(booking1, booking2)
+    fig = plt.figure(figsize=(30, 30))
+    nx.draw_networkx(network, with_labels=True)
+    plt.show()
 
 
 if __name__ == '__main__':
