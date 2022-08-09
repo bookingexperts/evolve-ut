@@ -89,14 +89,14 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
             # print("No conflict, place", from_booking.id, "at rentable", conflict.id)
             # Swap is possible!
             # Endpoint
-            plan_booking(conflict, copy_from_booking)
-            temp_bookings.append(copy_from_booking)
-            new_gapcount, max_gap = evaluate(temp_bookings)
+            possible_solution = create_backup_solution_bookings(temp_bookings)
+            possible_solution.append(copy_from_booking)
+            new_gapcount, max_gap = evaluate(possible_solution)
             # print(new_gapcount, max_gap)
             if new_gapcount < current_best_gapcount or (new_gapcount == current_best_gapcount and max_gap > current_best_max_gap):
                 current_best_gapcount = new_gapcount
                 current_best_max_gap = max_gap
-                new_solution = temp_bookings.copy()
+                new_solution = possible_solution.copy()
                 # print("New optimal situation found!")
         else:
             # print("Booking", from_booking.id, " has conflict with rentable:", conflict.id, conflicts[conflict])
@@ -114,9 +114,9 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
                                                       temp_rentables)
 
                 if temp_bookings is None:
-                    rentable_to.remove_from_planning(copy_from_booking)
+                    conflict.remove_from_planning(copy_from_booking)
                     for booking_back in conflicts[conflict]:
-                        plan_booking(rentable_to, booking_back)
+                        plan_booking(conflict, booking_back)
                     break
                 [booking_placed for booking_placed in temp_bookings if booking_placed.id == booking.id][0].place_rentable(True)
         if temp_bookings is None:
