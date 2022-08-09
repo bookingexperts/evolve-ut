@@ -18,14 +18,7 @@ class Rentable:
         self.closing_date = closing_date
         self.type = rentable_type
         self.schedule = {}
-        self.availability = False
         self.old_schedule = self.schedule.copy()
-
-    def update_availibility(self, current_day):
-        if current_day not in self.schedule.keys() or not self.schedule[current_day]:
-            self.availability = True
-        else:
-            self.availability = False
 
     def check_compatibility(self, booking: Booking):
         if (booking.fixed and booking.rentable != self.id) or \
@@ -79,6 +72,11 @@ class Rentable:
 
         # print(self.id, result)
         return result
+
+    def deepcopy(self):
+        copy = Rentable(self.opening_date, self.closing_date, self.id, self.type)
+        copy.schedule = self.schedule.copy()
+        return copy
 
 
 class BlockedPeriod:
