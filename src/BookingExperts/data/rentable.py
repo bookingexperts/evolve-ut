@@ -13,7 +13,7 @@ class Rentable:
 
     def __init__(self, opening_date, closing_date, rentable_id, rentable_type):
         # self.id = Rentable.new_id() % nr_rentables
-        self.id = int(rentable_id)
+        self.rentable_id = rentable_id
         self.opening_date = opening_date
         self.closing_date = closing_date
         self.type = rentable_type
@@ -21,7 +21,7 @@ class Rentable:
         self.old_schedule = self.schedule.copy()
 
     def check_compatibility(self, booking: Booking):
-        if (booking.fixed and booking.rentable != self.id) or \
+        if (booking.fixed and booking.rentable != self.rentable_id) or \
                 booking.start_date < self.opening_date or (
                 self.closing_date is not None and booking.end_date >= self.closing_date):
             return False
@@ -36,6 +36,7 @@ class Rentable:
             self.schedule[date] = booking
 
     def remove_from_planning(self, booking: Booking):
+        # print("Removing booking", booking.id, "from ", self.id)
         for date in daterange(booking.start_date, booking.end_date):
             del self.schedule[date]
 
@@ -53,7 +54,7 @@ class Rentable:
         return result
 
     def __repr__(self) -> str:
-        return f'{{id: {self.id}, opening_date: {self.opening_date}, closing_date: {self.closing_date}, ' \
+        return f'{{id: {self.rentable_id}, opening_date: {self.opening_date}, closing_date: {self.closing_date}, ' \
                f'type: {self.type}}}'
 
     def get_free_date_ranges(self, start_date, end_date) -> [(datetime, datetime)]:
@@ -74,16 +75,16 @@ class Rentable:
         if occupied_dates[-1].end_date < end_date:
             result.append((occupied_dates[-1].end_date, end_date))
 
-        # print(self.id, result)
+        # print(self.rentable_id, result)
         return result
 
     def deepcopy(self):
-        copy = Rentable(self.opening_date, self.closing_date, self.id, self.type)
+        copy = Rentable(self.opening_date, self.closing_date, self.rentable_id, self.type)
         copy.schedule = self.schedule.copy()
         return copy
 
     def __hash__(self):
-        return self.id
+        return int(self.rentable_id)
 
     def __eq__(self, other):
         if isinstance(other, Rentable):

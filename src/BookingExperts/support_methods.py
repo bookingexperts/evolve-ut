@@ -91,25 +91,28 @@ def create_backup_solution_rentable(set_of_rentables):
 
 
 def fill_class_dataset_with_new_data(old_class_set, new_class_set):
-    for item in range(len(old_class_set)):
-        old_class_set[item].id = new_class_set[item].id
-        old_class_set[item].start_date = new_class_set[item].start_date
-        old_class_set[item].end_date = new_class_set[item].end_date
-        old_class_set[item].length = new_class_set[item].length
-        old_class_set[item].rentable = new_class_set[item].rentable
-        old_class_set[item].rentable_type = new_class_set[item].rentable_type
-        old_class_set[item].fixed = new_class_set[item].fixed
-        old_class_set[item].placed = new_class_set[item].placed
+    for old_item in old_class_set:
+        for new_item in new_class_set:
+            if old_item.id == new_item.id:
+                old_item.start_date = new_item.start_date
+                old_item.end_date = new_item.end_date
+                old_item.rentable.schedule = new_item.rentable.schedule
+                old_item.rentable_type = new_item.rentable_type
+                old_item.fixed = new_item.fixed
+                old_item.placed = new_item.placed
+                break
     return old_class_set
 
 
 def fill_rentable_dataset_with_new_data(old_rentable_set, new_rentable_set):
-    for item in range(len(old_rentable_set)):
-        old_rentable_set[item].id = new_rentable_set[item].id
-        old_rentable_set[item].opening_date = new_rentable_set[item].opening_date
-        old_rentable_set[item].closing_date = new_rentable_set[item].closing_date
-        old_rentable_set[item].type = new_rentable_set[item].type
-        old_rentable_set[item].schedule = new_rentable_set[item].schedule
+    for old_item in old_rentable_set:
+        for new_item in new_rentable_set:
+            if old_item.rentable_id == new_item.rentable_id:
+                old_item.opening_date = new_item.opening_date
+                old_item.closing_date = new_item.closing_date
+                old_item.type = new_item.type
+                old_item.schedule = new_item.schedule
+                break
     return old_rentable_set
 
 
@@ -178,4 +181,5 @@ def kick_berths_at_index(i, j, nr_vessels, nr_berths, vessel_arriving_time, vess
 def plan_booking(rentable, booking):
     rentable.fill_planning(booking)
     booking.stay_start(rentable)
-    # print("Booking", booking.id, "placed for", booking.start_date, "until", booking.end_date, "on rentable", rentable.id, "\n")
+    print("Booking", booking.id, "placed for", booking.start_date, "until", booking.end_date, "on rentable", rentable.rentable_id, "\n")
+

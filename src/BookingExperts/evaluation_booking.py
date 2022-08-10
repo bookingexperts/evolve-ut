@@ -15,7 +15,7 @@ def daterange(start_date: datetime, end_date: datetime):
 def evaluate(planning):
     rentables = {}
     for booking in planning:
-        rentables[booking.rentable.id] = booking.rentable
+        rentables[booking.rentable.rentable_id] = booking.rentable
     total_gaps = 0
     biggest_gap = timedelta()
     for rentable in rentables:
@@ -53,10 +53,10 @@ def visualize(solution):
 
     rentables = {}
     for booking in solution:
-        rentables[booking.rentable.id] = booking.rentable
+        rentables[booking.rentable.rentable_id] = booking.rentable
     rentables = rentables.values()
     for rentable in rentables:
-        print("Schedule Rentable ", rentable.id, ": \t", rentable.schedule)
+        print("Schedule Rentable ", rentable.rentable_id, ": \t", rentable.schedule)
 
     current_date = datetime.strptime('2022-05-16', '%Y-%m-%d')
     last_date = current_date
