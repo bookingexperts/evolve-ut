@@ -47,7 +47,7 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
         print("Branch: move", from_booking_iterate.res_id, "to different rentable")
         temp_bookings = create_backup_solution_bookings(all_bookings)
         temp_bookings, temp_rentables = create_backup(all_bookings, set([booking.rentable for booking in all_bookings]))
-        from_booking = [booking for booking in temp_bookings if booking.id == from_booking_iterate.id][0]
+        from_booking = [booking for booking in temp_bookings if booking.res_id == from_booking_iterate.res_id][0]
         # # temp_bookings = fill_class_dataset_with_new_data(temp_bookings, original_bookings)
         # temp_rentables = list(set([booking.rentable for booking in temp_bookings]))
         # for booking in temp_bookings:
@@ -85,7 +85,7 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
                     booking.place_rentable(False)
                     for booking_og in original_bookings:
                         if booking.booking_id == booking_og.booking_id and booking.rentable.rentable_id != booking_og.rentable.rentable_id:
-                            print(booking.booking_id)
+                            print(booking.res_id)
                 print("New best solution found:", current_best_gapcount, current_best_max_gap)
                 current_best_solution_bookings = deepcopy(recursive_answer)
     return current_best_gapcount, current_best_max_gap, current_best_solution_bookings
@@ -127,13 +127,14 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
             # Endpoint
             if len(list(filter(lambda x: x.res_id == copy_from_booking.res_id, temp_bookings))) > 0:
                 None
-            possible_solution = create_backup(temp_bookings, temp_rentables)[0]
             copy_from_booking.place_rentable(True)
+            plan_booking(conflict, copy_from_booking)
+            possible_solution = create_backup(temp_bookings, temp_rentables)[0]
             possible_solution.append(copy_from_booking)
             possible_string = "Solution found by displacing: "
             for booking in possible_solution:
                 if booking.placed and not booking.fixed:
-                    possible_string += str(booking.id) + " "
+                    possible_string += str(booking.res_id) + " "
             # print(possible_string)
 
             # print("New optimal situation found!")
@@ -188,7 +189,7 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
             # print(new_gapcount, max_gap)
             if new_gapcount < current_best_gapcount or (
                     new_gapcount == current_best_gapcount and max_gap > current_best_max_gap):
-                new_solution = create_backup(possible_solution, set(booking.rentable for booking in possible_solution))
+                new_solution, new_rentables = create_backup(possible_solution, set(booking.rentable for booking in possible_solution))
                 # print(new_gapcount, max_gap)
     # print("<")
     if new_solution is not None:
