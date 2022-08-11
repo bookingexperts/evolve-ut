@@ -40,7 +40,6 @@ def get_bookings() -> [Booking]:
         links = request.json()['links']
 
         for booking_data in data:
-            booking_id = booking_data['id']
 
             for reservation in booking_data['relationships']['reservations']['data']:
                 reservation_id = reservation['id']
@@ -56,8 +55,7 @@ def get_bookings() -> [Booking]:
                 rentable_id = reservation_data['relationships']['rentable_identity']['data']['id']
                 rentable = _rentables[rentable_id]
 
-                booking = Booking(reservation_id, start_date, end_date, rentable_type, booking_id,
-                                  rentable, fixed, cancelled=cancelled)
+                booking = Booking(reservation_id, start_date, end_date, rentable_type, rentable, fixed, cancelled=cancelled)
 
                 if fixed:
                     booking.placed = True
@@ -82,7 +80,7 @@ def filter_bookings_on_type(rentable_type, bookings=None) -> [Booking]:
 
 def update_booking_rentable(booking, rentable_id=None):
     if rentable_id is None:
-        rentable_id = booking.rentable
+        rentable_id = booking.rentable.rentable_id
 
     data = {
         "data": {
@@ -110,13 +108,15 @@ def update_booking_rentable(booking, rentable_id=None):
 
 
 def update_multiple_booking_rentables(bookings: [Booking]):
-    initial_id = bookings[0].rentable.id
+    initial_id = int(bookings[0].rentable.rentable_id)
 
     for booking in bookings:
-        index = (booking.rentable.id - initial_id) % len(temporary_ids)
+        print('temporary placing', booking)
+        index = (int(booking.rentable.rentable_id) - initial_id) % len(temporary_ids)
         update_booking_rentable(booking, rentable_id=temporary_ids[index])
 
     for booking in bookings:
+        print('updating', booking)
         update_booking_rentable(booking)
 
 
