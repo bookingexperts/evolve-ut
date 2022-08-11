@@ -8,12 +8,12 @@ class Booking:
         self.start_date = start_date
         self.end_date = end_date
         self.length = end_date - start_date
-        self.rentable_type = rentable_type
+        self.placed = placed
         self.rentable = rentable
         self.fixed = fixed
         self.booking_id = int(booking_id)
         self.cancelled = cancelled
-        self.placed = placed
+        self.rentable_type = rentable_type
 
     def stay_start(self, rentable):
         self.rentable = rentable
@@ -32,7 +32,7 @@ class Booking:
 
     def __str__(self):
         return f'{{id: {self.res_id}, start_date: {self.start_date}, end_date: {self.end_date}, length: {self.length}, ' \
-               f'rentable_type: {self.rentable_type}, rentable: {self.rentable.id}, fixed: {self.fixed}}}'
+               f'rentable_type: {self.rentable_type}, rentable: {self.rentable.rentable_id}, fixed: {self.fixed}}}'
 
     def __repr__(self) -> str:
         return str(self)

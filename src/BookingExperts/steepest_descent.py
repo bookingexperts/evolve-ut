@@ -1,36 +1,7 @@
 from evaluation_booking import evaluate
-from src.BookingExperts.operators import swap_bookings_in_schedule
 from support_methods import *
 from operators import *
 from copy import deepcopy
-
-
-# Find all possible swaps of vessels that would improve the costs. At the end, return the best solution (the one with
-# the steepest descent)
-def steepest_descent(objective_value, all_bookings):
-    nr_swaps = 0
-    current_best = objective_value
-    original_bookings = all_bookings
-    temp_bookings = create_backup(original_bookings, set([booking.rentable for booking in original_bookings]))[0]
-    current_best_solution_bookings = create_backup_solution_bookings(original_bookings)
-    nr_bookings = len(original_bookings)
-    for from_booking_id in range(nr_bookings):
-        for to_booking_id in range(from_booking_id, nr_bookings):
-            temp_bookings = fill_class_dataset_with_new_data(temp_bookings, original_bookings)
-            from_booking = temp_bookings[from_booking_id]
-            to_booking = temp_bookings[to_booking_id]
-
-            if check_swap_possibility(from_booking.rentable, to_booking.rentable, from_booking, to_booking):
-                swap_bookings_in_schedule(from_booking.rentable, to_booking.rentable, from_booking, to_booking)
-                costs = evaluate(temp_bookings)
-                if costs < current_best:
-                    nr_swaps += 1
-                    current_best = costs
-                    current_best_solution_bookings = fill_class_dataset_with_new_data(current_best_solution_bookings,
-                                                                                      temp_bookings)
-
-    print("Total number of successful swaps:", nr_swaps)
-    return current_best, current_best_solution_bookings
 
 
 def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookings):
@@ -40,12 +11,10 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
     temp_bookings, rentables = create_backup(original_bookings,
                                              set([booking.rentable for booking in original_bookings]))
     current_best_solution_bookings = create_backup_solution_bookings(original_bookings)
-    rentables = list(set([booking.rentable for booking in temp_bookings]))
 
     for from_booking_iterate in all_bookings:
         # print(current_best_gapcount, current_best_max_gap)
         print("Branch: move", from_booking_iterate.res_id, "to different rentable")
-        temp_bookings = create_backup_solution_bookings(all_bookings)
         temp_bookings, temp_rentables = create_backup(all_bookings, set([booking.rentable for booking in all_bookings]))
         from_booking = [booking for booking in temp_bookings if booking.res_id == from_booking_iterate.res_id][0]
         # # temp_bookings = fill_class_dataset_with_new_data(temp_bookings, original_bookings)
@@ -67,12 +36,12 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
         recursive_answer = get_best_swap_descent(current_best_gapcount, current_best_max_gap, from_booking,
                                                  temp_bookings,
                                                  1)
+
         temp_bookings.append(from_booking)
         plan_booking(temp_rentable, from_booking)
         if recursive_answer is None:
             continue
         else:
-            placed_len = [booking for booking in recursive_answer if booking.placed and not booking.fixed]
 
             new_gapcount, max_gap = evaluate(recursive_answer)
             # print(new_gapcount, max_gap)
@@ -86,6 +55,8 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
                     for booking_og in original_bookings:
                         if booking.booking_id == booking_og.booking_id and booking.rentable.rentable_id != booking_og.rentable.rentable_id:
                             print(booking.res_id)
+                placed_len = [booking for booking in recursive_answer if booking.placed and not booking.fixed]
+
                 print("New best solution found:", current_best_gapcount, current_best_max_gap)
                 current_best_solution_bookings = deepcopy(recursive_answer)
     return current_best_gapcount, current_best_max_gap, current_best_solution_bookings
@@ -171,12 +142,12 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
                     temp_temp_bookings = recursive_answer
                     answer_possible = True
                     [booking_placed for booking_placed in recursive_answer if booking_placed.res_id == booking.res_id][0].place_rentable(True)
+            copy_from_booking.place_rentable(False)
             if answer_possible:
                 possible_solution = create_backup_solution_bookings(temp_temp_bookings)
             # print("_")
             temp_bookings = list(filter(lambda remove_booking: remove_booking.res_id != copy_from_booking.res_id, temp_bookings))
             conflict.remove_from_planning(copy_from_booking)
-            copy_from_booking.place_rentable(False)
 
             for booking in conflicts[conflict]:
                 plan_booking(conflict, booking)

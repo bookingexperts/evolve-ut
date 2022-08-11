@@ -10,8 +10,6 @@ class NotAvailableError(Exception):
 
 
 class Rentable:
-    id = int
-
     def __init__(self, opening_date, closing_date, rentable_id, rentable_type):
         # self.id = Rentable.new_id() % nr_rentables
         self.rentable_id = rentable_id
