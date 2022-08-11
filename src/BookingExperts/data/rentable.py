@@ -1,3 +1,4 @@
+import copy
 from datetime import datetime, timedelta
 
 from src.BookingExperts.data.booking import Booking
@@ -79,9 +80,7 @@ class Rentable:
         return result
 
     def deepcopy(self):
-        copy = Rentable(self.opening_date, self.closing_date, self.rentable_id, self.type)
-        copy.schedule = self.schedule.copy()
-        return copy
+        return copy.deepcopy(self)
 
     def __hash__(self):
         return int(self.rentable_id)

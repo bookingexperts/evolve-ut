@@ -1,3 +1,6 @@
+import copy
+
+
 class Booking:
     def __init__(self, reservation_id, start_date, end_date, rentable_type, booking_id, rentable=None,
                  fixed=False, cancelled=False, placed=False):
@@ -34,8 +37,6 @@ class Booking:
     def __repr__(self) -> str:
         return str(self)
 
-    def copy(self):
-        new_booking = Booking(self.id, self.start_date, self.end_date, self.rentable_type, self.booking_id, self.rentable,
-                       self.fixed, self.cancelled, self.placed)
-        new_booking.rentable = self.rentable.deepcopy()
+    def deepcopy(self):
+        new_booking = copy.deepcopy(self)
         return new_booking

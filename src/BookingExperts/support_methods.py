@@ -68,7 +68,7 @@ def read_file_with_uniform_distributions(name):
 def create_backup_solution_bookings(set_of_bookings):
     copy_of_bookings = []
     for booking in set_of_bookings:
-        copy_of_bookings.append(booking.copy())
+        copy_of_bookings.append(booking.deepcopy())
     return copy_of_bookings
 
 
@@ -181,5 +181,5 @@ def kick_berths_at_index(i, j, nr_vessels, nr_berths, vessel_arriving_time, vess
 def plan_booking(rentable, booking):
     rentable.fill_planning(booking)
     booking.stay_start(rentable)
-    print("Booking", booking.id, "placed for", booking.start_date, "until", booking.end_date, "on rentable", rentable.rentable_id, "\n")
+    # print("Booking", booking.id, "placed for", booking.start_date, "until", booking.end_date, "on rentable", rentable.rentable_id, "\n")
 

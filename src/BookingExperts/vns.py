@@ -14,6 +14,10 @@ def variable_neighbourhood_search(nr_of_iterations, objective_gapcount, objectiv
         print("Calculate local optimum")
 
         extended_gapcount, extended_max_gap, extended_bookings = extended_steepest_descent(best_gapcount, best_max_gap, best_bookings)
+        if extended_bookings is None or (extended_gapcount, extended_max_gap) == (best_gapcount, best_max_gap):
+            break
+
+        visualize(extended_bookings)
 
         if (extended_gapcount, extended_max_gap) == (best_gapcount, best_max_gap):
             break
