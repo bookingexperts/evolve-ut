@@ -93,7 +93,7 @@ def create_backup_solution_rentable(set_of_rentables):
 def fill_class_dataset_with_new_data(old_class_set, new_class_set):
     for old_item in old_class_set:
         for new_item in new_class_set:
-            if old_item.id == new_item.id:
+            if old_item.res_id == new_item.res_id:
                 old_item.start_date = new_item.start_date
                 old_item.end_date = new_item.end_date
                 old_item.rentable.schedule = new_item.rentable.schedule
@@ -151,9 +151,9 @@ def get_all_neighbours(bookings):
         if check_swap_possibility(from_booking.housed_by, to_booking.housed_by, from_booking, to_booking):
             temp_bookings = create_backup_solution_bookings(bookings)
             for temp_booking in temp_bookings:
-                if temp_booking.id == from_booking.id:
+                if temp_booking.res_id == from_booking.res_id:
                     from_booking = temp_booking
-                if temp_booking.id == to_booking.id:
+                if temp_booking.res_id == to_booking.res_id:
                     to_booking = temp_booking
             # Swap
             swap_ships_in_schedule(from_booking.housed_by, to_booking.housed_by)
@@ -181,5 +181,5 @@ def kick_berths_at_index(i, j, nr_vessels, nr_berths, vessel_arriving_time, vess
 def plan_booking(rentable, booking):
     rentable.fill_planning(booking)
     booking.stay_start(rentable)
-    # print("Booking", booking.id, "placed for", booking.start_date, "until", booking.end_date, "on rentable", rentable.rentable_id, "\n")
+    # print("Booking", booking.res_id, "placed for", booking.start_date, "until", booking.end_date, "on rentable", rentable.rentable_id, "\n")
 

@@ -4,7 +4,7 @@ import copy
 class Booking:
     def __init__(self, reservation_id, start_date, end_date, rentable_type, booking_id, rentable=None,
                  fixed=False, cancelled=False, placed=False):
-        self.id = int(reservation_id)
+        self.res_id = int(reservation_id)
         self.start_date = start_date
         self.end_date = end_date
         self.length = end_date - start_date
@@ -31,7 +31,7 @@ class Booking:
             return False
 
     def __str__(self):
-        return f'{{id: {self.id}, start_date: {self.start_date}, end_date: {self.end_date}, length: {self.length}, ' \
+        return f'{{id: {self.res_id}, start_date: {self.start_date}, end_date: {self.end_date}, length: {self.length}, ' \
                f'rentable_type: {self.rentable_type}, rentable: {self.rentable.id}, fixed: {self.fixed}}}'
 
     def __repr__(self) -> str:

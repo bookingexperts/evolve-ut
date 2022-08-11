@@ -37,7 +37,7 @@ class Rentable:
             self.schedule[date] = booking
 
     def remove_from_planning(self, booking: Booking):
-        # print("Removing booking", booking.id, "from ", self.id)
+        # print("Removing booking", booking.res_id, "from ", self.id)
         for date in daterange(booking.start_date, booking.end_date):
             del self.schedule[date]
 

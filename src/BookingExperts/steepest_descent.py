@@ -43,9 +43,9 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
 
     for from_booking_iterate in all_bookings:
         # print(current_best_gapcount, current_best_max_gap)
-        print("Branch: move", from_booking_iterate.id, "to different rentable")
+        print("Branch: move", from_booking_iterate.res_id, "to different rentable")
         temp_bookings = create_backup_solution_bookings(all_bookings)
-        from_booking = [booking for booking in temp_bookings if booking.id == from_booking_iterate.id][0]
+        from_booking = [booking for booking in temp_bookings if booking.res_id == from_booking_iterate.res_id][0]
         # temp_bookings = fill_class_dataset_with_new_data(temp_bookings, original_bookings)
         temp_rentables = list(set([booking.rentable for booking in temp_bookings]))
         for booking in temp_bookings:
@@ -53,11 +53,11 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
                 if booking.rentable.rentable_id == rentable.rentable_id:
                     booking.rentable = rentable
                     break
-        # from_booking = [booking for booking in temp_bookings if booking.id == from_booking_iterate.id][0]
+        # from_booking = [booking for booking in temp_bookings if booking.res_id == from_booking_iterate.res_id][0]
         temp_bookings.remove(from_booking)
         # temp_bookings = list(filter(lambda booking: booking.booking_id != from_booking_iterate.booking_id, temp_bookings))
         temp_rentable = list(filter(lambda rentable: rentable.rentable_id == from_booking.rentable.rentable_id, temp_rentables))[0]
-        # temp_rentable.remove_from_planning([booking for booking in temp_rentable.schedule.values() if booking.id == from_booking.id][0])
+        # temp_rentable.remove_from_planning([booking for booking in temp_rentable.schedule.values() if booking.res_id == from_booking.res_id][0])
         temp_rentable.remove_from_planning(from_booking)
         recursive_answer = get_best_swap_descent(current_best_gapcount, current_best_max_gap, from_booking,
                                                  temp_bookings,
@@ -78,6 +78,9 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
                 # current_best_solution_bookings = fill_class_dataset_with_new_data(current_best_solution_bookings, recursive_answer)
                 for booking in recursive_answer:
                     booking.place_rentable(False)
+                    for booking_og in original_bookings:
+                        if booking.booking_id == booking_og.booking_id and booking.rentable.rentable_id != booking_og.rentable.rentable_id:
+                            print(booking.booking_id)
                 print("New best solution found:", current_best_gapcount, current_best_max_gap)
                 current_best_solution_bookings = deepcopy(recursive_answer)
     return current_best_gapcount, current_best_max_gap, current_best_solution_bookings
@@ -105,9 +108,9 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
     # temp_rentables = list(temp_rentables.values())
 
     conflicts = extended_get_conflicts(from_booking.rentable, temp_rentables, from_booking)
-    # print("Booking", from_booking.id, "has conflicts:", conflicts)
+    # print("Booking", from_booking.res_id, "has conflicts:", conflicts)
     if len(conflicts) == 0:
-        # print("No swap possible anymore for", from_booking.id)
+        # print("No swap possible anymore for", from_booking.res_id)
         # print("<")
         return None
     for conflict in conflicts:
@@ -118,33 +121,36 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
         rentable_to = conflict.deepcopy()
         if len(conflicts[conflict]) == 0:
             answer_possible = True
-            # print("No conflict, place", from_booking.id, "at rentable", conflict.rentable_id)
+            # print("No conflict, place", from_booking.res_id, "at rentable", conflict.rentable_id)
             # Swap is possible!
             # Endpoint
-            if len(list(filter(lambda x: x.id == copy_from_booking.id, temp_bookings))) > 0:
+            if len(list(filter(lambda x: x.res_id == copy_from_booking.res_id, temp_bookings))) > 0:
                 None
+
             possible_solution = create_backup_solution_bookings(temp_bookings)
+
             copy_from_booking.place_rentable(True)
+            plan_booking(conflict, copy_from_booking)
             possible_solution.append(copy_from_booking)
             possible_string = "Solution found by displacing: "
             for booking in possible_solution:
                 if booking.placed and not booking.fixed:
-                    possible_string += str(booking.id) + " "
+                    possible_string += str(booking.res_id) + " "
             # print(possible_string)
 
                 # print("New optimal situation found!")
         else:
-            # print("Booking", from_booking.id, " has conflict with rentable:", conflict.id, conflicts[conflict])
+            # print("Booking", from_booking.res_id, " has conflict with rentable:", conflict.res_id, conflicts[conflict])
             for booking in conflicts[conflict]:
-                # print("Removing booking", booking.id, "from ", booking.rentable.rentable_id)
-                temp_bookings = list(filter(lambda x: x.id != booking.id, temp_bookings))
+                # print("Removing booking", booking.res_id, "from ", booking.rentable.rentable_id)
+                temp_bookings = list(filter(lambda x: x.res_id != booking.res_id, temp_bookings))
                 conflict.remove_from_planning(booking)
             copy_from_booking.place_rentable(True)
             plan_booking(conflict, copy_from_booking)
             temp_bookings.append(copy_from_booking)
             temp_temp_bookings = create_backup_solution_bookings(temp_bookings)
             for booking in conflicts[conflict]:
-                # print("Attempting to place booking", booking.id, "..... (" + str(booking.start_date) + " to " + str(booking.end_date) + ")" )
+                # print("Attempting to place booking", booking.res_id, "..... (" + str(booking.start_date) + " to " + str(booking.end_date) + ")" )
                 # print(">")
                 recursive_answer = get_best_swap_descent(current_best_gapcount, current_best_max_gap, booking,
                                                       temp_temp_bookings,
@@ -161,16 +167,16 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
                     placed_len = [booking for booking in recursive_answer if booking.placed and not booking.fixed]
                     for booking1 in recursive_answer:
                         for booking2 in temp_bookings:
-                            if booking1.id == booking2.id != booking.id and booking1.placed and not booking2.placed:
+                            if booking1.res_id == booking2.res_id != booking.res_id and booking1.placed and not booking2.placed:
                                 booking1.place_rentable(False)
 
                     temp_temp_bookings = recursive_answer
                     answer_possible = True
-                    [booking_placed for booking_placed in recursive_answer if booking_placed.id == booking.id][0].place_rentable(True)
+                    [booking_placed for booking_placed in recursive_answer if booking_placed.res_id == booking.res_id][0].place_rentable(True)
             if answer_possible:
                 possible_solution = create_backup_solution_bookings(temp_temp_bookings)
             # print("_")
-            temp_bookings = list(filter(lambda remove_booking: remove_booking.id != copy_from_booking.id, temp_bookings))
+            temp_bookings = list(filter(lambda remove_booking: remove_booking.res_id != copy_from_booking.res_id, temp_bookings))
             conflict.remove_from_planning(copy_from_booking)
             copy_from_booking.place_rentable(False)
 

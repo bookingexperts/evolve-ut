@@ -86,7 +86,7 @@ def update_booking_rentable(booking, rentable_id=None):
 
     data = {
         "data": {
-            "id": str(booking.id),
+            "id": str(booking.res_id),
             "type": "reservation",
             "attributes": {
                 "fixed_rentable": booking.fixed
@@ -102,7 +102,7 @@ def update_booking_rentable(booking, rentable_id=None):
         }
     }
 
-    address = f'{root}/{_admin_id}/reservations/{booking.id}'
+    address = f'{root}/{_admin_id}/reservations/{booking.res_id}'
     request = requests.patch(address, headers=headers, json=data)
 
     if request.status_code != 200:
