@@ -39,7 +39,7 @@ def read_file(name):
     closing_dates_rentables = [int(item) for item in lines[5].split(" ") if item != ""]
 
     return number_bookings, number_rentables, start_dates_bookings, end_dates_bookings, opening_dates_rentables, \
-        closing_dates_rentables
+           closing_dates_rentables
 
 
 def read_file_with_uniform_distributions(name):
@@ -62,7 +62,7 @@ def read_file_with_uniform_distributions(name):
     for i, handling_time in enumerate(handling_times):
         handling_times[i] = [time + round(random.uniform(1, 7)) for time in handling_time]
     return number_vessels, number_berths, start_times_vessels, end_time_vessels, opening_times_berths, \
-        closing_times_berths, handling_times, handling_costs_berths
+           closing_times_berths, handling_times, handling_costs_berths
 
 
 def create_backup_solution_bookings(set_of_bookings):
@@ -102,6 +102,21 @@ def fill_class_dataset_with_new_data(old_class_set, new_class_set):
                 old_item.placed = new_item.placed
                 break
     return old_class_set
+
+
+def create_backup(bookings, rentables):
+    backup_rentables = {}
+    backup_bookings = []
+
+    for rentable in rentables:
+        backup_rentables[rentable.rentable_id] = rentable.deepcopy()
+
+    for booking in bookings:
+        new_booking = booking.deepcopy()
+        new_booking.rentable = backup_rentables[booking.rentable.rentable_id]
+        backup_bookings.append(new_booking)
+
+    return backup_bookings, list(backup_rentables.values())
 
 
 def fill_rentable_dataset_with_new_data(old_rentable_set, new_rentable_set):
@@ -162,8 +177,6 @@ def get_all_neighbours(bookings):
     return random.sample(neighbours, k=100)
 
 
-
-
 def kick_berths_at_index(i, j, nr_vessels, nr_berths, vessel_arriving_time, vessel_end_time, berth_opening_time,
                          berth_closing_time, handling_time, handling_costs):
     nr_berths -= 2
@@ -175,11 +188,11 @@ def kick_berths_at_index(i, j, nr_vessels, nr_berths, vessel_arriving_time, vess
         berth_times.pop(j)
         berth_times.pop(i)
     return nr_vessels, nr_berths, vessel_arriving_time, vessel_end_time, berth_opening_time, berth_closing_time, \
-        handling_time, handling_costs
+           handling_time, handling_costs
 
 
 def plan_booking(rentable, booking):
     rentable.fill_planning(booking)
     booking.stay_start(rentable)
-    # print("Booking", booking.id, "placed for", booking.start_date, "until", booking.end_date, "on rentable", rentable.rentable_id, "\n")
+    # print("Booking", booking.id, "placed for", booking.start_date, "until", booking.end_date, "on rentable", rentable.rentable_id)
 
