@@ -104,6 +104,21 @@ def fill_class_dataset_with_new_data(old_class_set, new_class_set):
     return old_class_set
 
 
+def create_backup(bookings, rentables):
+    backup_rentables = {}
+    backup_bookings = []
+
+    for rentable in rentables:
+        backup_rentables[rentable.rentable_id] = rentable.deepcopy()
+
+    for booking in bookings:
+        new_booking = booking.deepcopy()
+        new_booking.rentable = backup_rentables[booking.rentable.rentable_id]
+        backup_bookings.append(new_booking)
+
+    return backup_bookings, list(backup_rentables.values())
+
+
 def fill_rentable_dataset_with_new_data(old_rentable_set, new_rentable_set):
     for old_item in old_rentable_set:
         for new_item in new_rentable_set:
@@ -162,8 +177,6 @@ def get_all_neighbours(bookings):
     return random.sample(neighbours, k=100)
 
 
-
-
 def kick_berths_at_index(i, j, nr_vessels, nr_berths, vessel_arriving_time, vessel_end_time, berth_opening_time,
                          berth_closing_time, handling_time, handling_costs):
     nr_berths -= 2
@@ -175,7 +188,7 @@ def kick_berths_at_index(i, j, nr_vessels, nr_berths, vessel_arriving_time, vess
         berth_times.pop(j)
         berth_times.pop(i)
     return nr_vessels, nr_berths, vessel_arriving_time, vessel_end_time, berth_opening_time, berth_closing_time, \
-        handling_time, handling_costs
+           handling_time, handling_costs
 
 
 def plan_booking(rentable, booking):
