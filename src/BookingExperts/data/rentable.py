@@ -39,7 +39,8 @@ class Rentable:
     def remove_from_planning(self, booking: Booking):
         # print("Removing booking", booking.res_id, "from ", self.id)
         for date in daterange(booking.start_date, booking.end_date):
-            del self.schedule[date]
+            if date in self.schedule:
+                del self.schedule[date]
 
     def set_planning_date(self, date: datetime, reason):
         self.schedule[date] = reason
@@ -93,6 +94,11 @@ class Rentable:
 
     def __ne__(self, other):
         return not self.__eq__(other)
+    #
+    # def __deepcopy__(self, memodict={}):
+    #     new_rentable = Rentable(self.opening_date, self.closing_date, self.rentable_id, self.type)
+    #     new_rentable.schedule = self.schedule.copy()
+    #     return new_rentable
 
 
 class BlockedPeriod:

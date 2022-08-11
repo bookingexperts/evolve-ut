@@ -2,7 +2,7 @@ import copy
 
 
 class Booking:
-    def __init__(self, reservation_id, start_date, end_date, rentable_type, booking_id, rentable=None,
+    def __init__(self, reservation_id, start_date, end_date, rentable_type, rentable=None,
                  fixed=False, cancelled=False, placed=False):
         self.res_id = int(reservation_id)
         self.start_date = start_date
@@ -11,7 +11,6 @@ class Booking:
         self.rentable_type = rentable_type
         self.rentable = rentable
         self.fixed = fixed
-        self.booking_id = int(booking_id)
         self.cancelled = cancelled
         self.placed = placed
 
@@ -32,10 +31,14 @@ class Booking:
 
     def __str__(self):
         return f'{{id: {self.res_id}, start_date: {self.start_date}, end_date: {self.end_date}, length: {self.length}, ' \
-               f'rentable_type: {self.rentable_type}, rentable: {self.rentable.id}, fixed: {self.fixed}}}'
+               f'rentable_type: {self.rentable_type}, rentable: {self.rentable.rentable_id}, fixed: {self.fixed}}}'
 
     def __repr__(self) -> str:
         return str(self)
+    #
+    # def __deepcopy__(self, memodict={}):
+    #     new_booking = Booking(self.booking_id, self.start_date, self.end_date, self.rentable_type, self.booking_id, self.rentable.deepcopy())
+    #     return new_booking
 
     def deepcopy(self):
         new_booking = copy.deepcopy(self)
