@@ -6,7 +6,7 @@ from evaluation_booking import evaluate, visualize, visualize_original_graph
 from pareto import pareto_search
 from schedule_obtain import first_come_first_serve
 from src.BookingExperts.data.server_communication import get_bookings, get_rentables, get_rentable_types, \
-    filter_bookings_on_type, filter_rentables_on_type
+    filter_bookings_on_type, filter_rentables_on_type, update_multiple_booking_rentables
 from vns import variable_neighbourhood_search
 
 
@@ -20,6 +20,7 @@ def run_vns(bookings, rentables):
         gaps, max_gap = evaluate(bookings_by_type)
         heuristic_gapcount, heuristic_max_gap, heuristic_bookings = variable_neighbourhood_search(10, gaps, max_gap, bookings_by_type)
         visualize(heuristic_bookings)
+        update_multiple_booking_rentables(heuristic_bookings)
         break
 
 

@@ -107,6 +107,7 @@ class BlockedPeriod:
         self.end_date = end_date
         self.rentable = rentable
         self.fixed = True
+        self.placed = True
 
     def copy(self):
         return BlockedPeriod(self.start_date, self.end_date, self.rentable)

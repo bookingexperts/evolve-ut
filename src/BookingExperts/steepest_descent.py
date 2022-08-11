@@ -84,7 +84,7 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
                 for booking in recursive_answer:
                     booking.place_rentable(False)
                     for booking_og in original_bookings:
-                        if booking.booking_id == booking_og.booking_id and booking.rentable.rentable_id != booking_og.rentable.rentable_id:
+                        if booking.res_id == booking_og.res_id and booking.rentable.rentable_id != booking_og.rentable.rentable_id:
                             print(booking.res_id)
                 print("New best solution found:", current_best_gapcount, current_best_max_gap)
                 current_best_solution_bookings = deepcopy(recursive_answer)
