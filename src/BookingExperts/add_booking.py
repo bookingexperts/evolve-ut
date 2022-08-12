@@ -30,7 +30,7 @@ def check_booking(new_booking: Booking):
                 return False, None
 
     gaps, biggest_gap = evaluate.evaluate(bookings)
-    new_situation = descent.get_best_swap_descent(gaps, biggest_gap, new_booking, bookings, 1)
+    new_situation = descent.get_best_swap_descent(gaps, biggest_gap, new_booking, bookings, 0)
 
     if new_situation is None:
         return False, None
