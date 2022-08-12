@@ -55,7 +55,8 @@ def get_bookings() -> [Booking]:
                 rentable_id = reservation_data['relationships']['rentable_identity']['data']['id']
                 rentable = _rentables[rentable_id]
 
-                booking = Booking(reservation_id, start_date, end_date, rentable_type, rentable, fixed, cancelled=cancelled)
+                booking = Booking(reservation_id, start_date, end_date, rentable_type, rentable, fixed,
+                                  cancelled=cancelled)
 
                 if fixed:
                     booking.placed = True
@@ -118,6 +119,13 @@ def update_multiple_booking_rentables(bookings: [Booking]):
     for booking in bookings:
         print('updating', booking)
         update_booking_rentable(booking)
+
+
+def post_booking(booking):
+    address = f'{root}/{_admin_id}/reservations'
+
+
+    pass
 
 
 def get_rentables() -> {str, Rentable}:
