@@ -74,10 +74,6 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
     copy_from_booking = from_booking.deepcopy()
 
     new_solution = None
-    # temp_rentables = {}
-    # for booking in temp_bookings:
-    #     temp_rentables[booking.rentable.rentable_id] = booking.rentable
-    # temp_rentables = list(temp_rentables.values())
 
     conflicts = extended_get_conflicts(from_booking.rentable, temp_rentables, from_booking)
     # print("Booking", from_booking.res_id, "has conflicts:", conflicts)
@@ -128,9 +124,7 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
                 if recursive_answer is None:
                     answer_possible = False
 
-                    # for booking_back in conflicts[conflict]:
-                    #     plan_booking(conflict, booking_back)
-                    #     temp_bookings.append(booking_back)
+
                     break
                 else:
                     placed_len = [booking for booking in recursive_answer if booking.placed and not booking.fixed]

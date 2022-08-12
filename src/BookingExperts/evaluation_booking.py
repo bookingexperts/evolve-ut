@@ -1,16 +1,17 @@
 import itertools
 from datetime import datetime, timedelta
 
-
 from operators import daterange
 import src.BookingExperts.data.server_communication as comm
 from src.booking_utils import fill_rentable_plannings
 import networkx as nx
 import matplotlib.pyplot as plt
 
+
 def daterange(start_date: datetime, end_date: datetime):
     for n in range(int((end_date - start_date).days)):
         yield start_date + timedelta(n)
+
 
 def evaluate(planning):
     rentables = {}
@@ -18,15 +19,35 @@ def evaluate(planning):
         rentables[booking.rentable.rentable_id] = booking.rentable
     total_gaps = 0
     biggest_gap = timedelta()
-    for rentable in rentables:
-        schedule = [date for date in sorted(rentables[rentable].schedule.keys()) if rentables[rentable].schedule[date] is not None]
-        # print(len(schedule), schedule)
-        for i in range(1, len(schedule)):
-            gap_size = schedule[i] - schedule[i - 1] - timedelta(days=1)
+    for rentable in rentables.values():
+        added_gaps, potential_biggest_gap = evaluate_rentable(rentable)
+        total_gaps += added_gaps
+        biggest_gap = max(biggest_gap, potential_biggest_gap)
 
-            if gap_size >= timedelta(days=1):
-                total_gaps += 1
-                biggest_gap = max(biggest_gap, gap_size)
+        # schedule = [date for date in sorted(rentables[rentable].schedule.keys()) if
+        #             rentables[rentable].schedule[date] is not None]
+        # # print(len(schedule), schedule)
+        # for i in range(1, len(schedule)):
+        #     gap_size = schedule[i] - schedule[i - 1] - timedelta(days=1)
+        #
+        #     if gap_size >= timedelta(days=1):
+        #         total_gaps += 1
+        #         biggest_gap = max(biggest_gap, gap_size)
+
+    return total_gaps, biggest_gap
+
+
+def evaluate_rentable(rentable):
+    schedule = [date for date in sorted(rentable.schedule.keys()) if rentable.schedule[date] is not None]
+    total_gaps = 0
+    biggest_gap = timedelta()
+
+    for i in range(1, len(schedule)):
+        gap_size = schedule[i] - schedule[i - 1] - timedelta(days=1)
+
+        if gap_size >= timedelta(days=1):
+            total_gaps += 1
+            biggest_gap = max(biggest_gap, gap_size)
 
     return total_gaps, biggest_gap
 
@@ -54,7 +75,7 @@ def visualize(solution):
     rentables = {}
     for booking in solution:
         rentables[booking.rentable.rentable_id] = booking.rentable
-    rentables = rentables.values()
+    rentables = sorted(rentables.values(), key=lambda rentable: rentable.rentable_id)
     for rentable in rentables:
         print("Schedule Rentable ", rentable.rentable_id, ": \t", rentable.schedule)
 

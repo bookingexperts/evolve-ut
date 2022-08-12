@@ -32,7 +32,7 @@ def get_bookings() -> [Booking]:
     address = f'{root}/{_admin_id}/bookings'
     request = requests.get(address, params=params, headers=headers)
 
-    bookings = []
+    _bookings = []
 
     while True:
         data = request.json()['data']
@@ -61,14 +61,14 @@ def get_bookings() -> [Booking]:
                     booking.placed = True
                 rentable.fill_planning(booking)
 
-                bookings.append(booking)
+                _bookings.append(booking)
                 # print(booking)
 
         if links['next'] is None:
             break
 
         request = requests.get(links['next'], headers=headers)
-    return bookings
+    return _bookings
 
 
 def filter_bookings_on_type(rentable_type, bookings=None) -> [Booking]:
@@ -121,13 +121,14 @@ def update_multiple_booking_rentables(bookings: [Booking]):
 
 
 def get_rentables() -> {str, Rentable}:
+    global _rentables
     if _rentables is not None:
         return _rentables
 
     address = f'{root}/{_admin_id}/rentables'
     request = requests.get(address, headers=headers)
 
-    rentables = {}
+    _rentables = {}
 
     while True:
         data = request.json()['data']
@@ -144,7 +145,7 @@ def get_rentables() -> {str, Rentable}:
             rentable_type = rentable['relationships']['category']['data']['id']
 
             rentable = Rentable(start_date, end_date, rentable_id, rentable_type)
-            rentables[rentable_id] = rentable
+            _rentables[rentable_id] = rentable
             # print(rentable)
 
         if links['next'] is None:
@@ -152,8 +153,8 @@ def get_rentables() -> {str, Rentable}:
 
         request = requests.get(links['next'], headers=headers)
 
-    set_blocked_periods(rentables)
-    return rentables
+    set_blocked_periods(_rentables)
+    return _rentables
 
 
 def set_blocked_periods(rentables: {str, Rentable}):
