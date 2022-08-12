@@ -52,8 +52,8 @@ def visualize(solution):
     for booking in solution:
         rentables[booking.rentable.rentable_id] = booking.rentable
     rentables = sorted(rentables.values(), key=lambda rentable: rentable.rentable_id)
-    for rentable in rentables:
-        print("Schedule Rentable ", rentable.rentable_id, ": \t", rentable.schedule)
+    # for rentable in rentables:
+    #     print("Schedule Rentable ", rentable.rentable_id, ": \t", rentable.schedule)
 
     current_date = datetime.strptime('2022-05-16', '%Y-%m-%d')
     last_date = current_date

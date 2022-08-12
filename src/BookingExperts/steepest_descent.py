@@ -14,7 +14,7 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
     current_best_solution_bookings = create_backup_solution_bookings(original_bookings)
 
     for from_booking_iterate in all_bookings:
-        print("Branch: move", from_booking_iterate.res_id, "to different rentable")
+        # print("Branch: move", from_booking_iterate.res_id, "to different rentable")
         temp_bookings, temp_rentables = create_backup(all_bookings)
         from_booking = [booking for booking in temp_bookings if booking.res_id == from_booking_iterate.res_id][0]
 
@@ -40,12 +40,12 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
                 for booking in recursive_answer:
                     booking.place_rentable(False)
 
-                print("New best solution found:", current_best_gapcount, current_best_max_gap)
-                for booking in recursive_answer:
-                    for booking_og in all_bookings:
-                        if booking.res_id == booking_og.res_id and booking.rentable.rentable_id != booking_og.rentable.rentable_id:
-                            print(booking.res_id, booking.start_date, booking.end_date)
-                            break
+                # print("New best solution found:", current_best_gapcount, current_best_max_gap)
+                # for booking in recursive_answer:
+                #     for booking_og in all_bookings:
+                #         if booking.res_id == booking_og.res_id and booking.rentable.rentable_id != booking_og.rentable.rentable_id:
+                #             print(booking.res_id, booking.start_date, booking.end_date)
+                #             break
 
                 current_best_solution_bookings = create_backup(recursive_answer)[0]
     return current_best_gapcount, current_best_max_gap, current_best_solution_bookings

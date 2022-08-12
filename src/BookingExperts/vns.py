@@ -29,5 +29,5 @@ def variable_neighbourhood_search(nr_of_iterations, objective_gapcount, objectiv
         print(best_gapcount, best_max_gap)
 
 
-    visualize(best_bookings)
+    # visualize(best_bookings)
     return best_gapcount, best_max_gap, best_bookings

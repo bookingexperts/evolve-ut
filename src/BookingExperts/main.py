@@ -13,7 +13,6 @@ def run_vns(bookings, rentables):
         gaps, max_gap = evaluate(bookings_by_type)
         heuristic_gapcount, heuristic_max_gap, heuristic_bookings = variable_neighbourhood_search(10, gaps, max_gap, bookings_by_type)
         visualize(heuristic_bookings)
-        break
 
 if __name__ == "__main__":
     start_time = time.time()
