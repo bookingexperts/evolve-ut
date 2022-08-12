@@ -104,9 +104,11 @@ def fill_class_dataset_with_new_data(old_class_set, new_class_set):
     return old_class_set
 
 
-def create_backup(bookings, rentables):
+def create_backup(bookings):
     backup_rentables = {}
     backup_bookings = []
+
+    rentables = set([booking.rentable for booking in bookings])
 
     for rentable in rentables:
         backup_rentables[rentable.rentable_id] = rentable.deepcopy()

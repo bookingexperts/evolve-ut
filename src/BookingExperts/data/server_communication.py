@@ -24,7 +24,7 @@ def get_bookings() -> [Booking]:
     if _bookings is not None:
         return _bookings
 
-    print(_rentables)
+    # print(_rentables)
     if _rentables is None:
         _rentables = get_rentables()
 
@@ -158,7 +158,7 @@ def get_rentables() -> {str, Rentable}:
 
 def set_blocked_periods(rentables: {str, Rentable}):
     params = {'filter[type]': 'MaintenanceAgendaPeriod', "include": "rentable"}
-    print(rentables)
+    # print(rentables)
 
     address = f'{root}/{_admin_id}/agenda_periods'
     request = requests.get(address, headers=headers, params=params)
@@ -219,11 +219,11 @@ def main():
     global _rentables, _bookings
     _rentables = get_rentables()
     _bookings = get_bookings()
-    print(len(_bookings))
+    # print(len(_bookings))
 
-    for rentable in _rentables.values():
+    # for rentable in _rentables.values():
         # print(rentable)
-        print(rentable.get_agenda_periods())
+        # print(rentable.get_agenda_periods())
 
 
 def initialize():
