@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 
 
-
 def check_swap_possibility(from_rentable, to_rentable, from_booking, to_booking):
     # Same booking
     if from_booking == to_booking:
@@ -24,8 +23,8 @@ def check_swap_possibility(from_rentable, to_rentable, from_booking, to_booking)
         to_rentable.schedule = to_rentable.old_schedule
         return False
 
-def check_extended_swap_possibility(from_rentable, from_booking, all_rentables, all_bookings):
 
+def check_extended_swap_possibility(from_rentable, from_booking, all_rentables, all_bookings):
     swap_possibilities = []
     unchecked_bookings = all_bookings.copy()
 
@@ -37,20 +36,17 @@ def check_extended_swap_possibility(from_rentable, from_booking, all_rentables, 
         to_rentable.old_schedule = to_rentable.schedule.copy()
 
         for date in daterange(from_booking.start_date, from_booking.end_date):
-            conflict_bookings = set([to_rentable.schedule[date] for date in daterange(from_booking.start_date, from_booking.end_date)])
-
-
-
-
+            conflict_bookings = set(
+                [to_rentable.schedule[date] for date in daterange(from_booking.start_date, from_booking.end_date)])
 
     for to_booking in all_bookings:
         schedules = []
 
         for rentable in all_rentables:
-            schedules.extend([rentable.schedule[date] for date in daterange(from_booking.start_date, from_booking.end_date)])
+            schedules.extend(
+                [rentable.schedule[date] for date in daterange(from_booking.start_date, from_booking.end_date)])
         to_bookings = set([booking for booking in schedules])
         swap_possibilities = list(to_bookings)
-
 
     for swap_to in swap_possibilities:
         # check if swap_to is the same booking
@@ -68,7 +64,8 @@ def check_extended_swap_possibility(from_rentable, from_booking, all_rentables, 
         for date in daterange(to_booking.start_date, to_booking.end_date):
             del to_rentable.schedule[date]
 
-        if check_extended_swap_possibility(to_rentable, swap_to, all_rentables, unchecked_bookings.remove(from_booking)):
+        if check_extended_swap_possibility(to_rentable, swap_to, all_rentables,
+                                           unchecked_bookings.remove(from_booking)):
             return
         # Swap possible?
         # Swap possible, return true
@@ -81,19 +78,17 @@ def check_extended_swap_possibility(from_rentable, from_booking, all_rentables, 
     return True
 
 
-
-
-
 # Get all rentables that have an ability to be swapped, even with conflict.
 def extended_get_conflicts(from_rentable, all_rentables, from_booking):
     conflicts = {}
     for rentable in all_rentables:
-        if rentable.rentable_id == from_rentable.rentable_id:
+        if from_rentable is not None and rentable.rentable_id == from_rentable.rentable_id:
             continue
         booking_conflicts = get_bookings_in_schedule(rentable, from_booking.start_date, from_booking.end_date)
         if booking_conflicts is not None:
             conflicts[rentable] = booking_conflicts
     return conflicts
+
 
 # Get all bookings in a specific schedule period
 def get_bookings_in_schedule(rentable, start_date, end_date):
@@ -106,18 +101,16 @@ def get_bookings_in_schedule(rentable, start_date, end_date):
             booking_conflicts.append(rentable.schedule[date])
     return set(booking_conflicts)
 
+
 def extended_swap_bookings_in_schedule(from_rentable, to_rentable, from_booking, to_booking):
-
-
-
-
     to_rentable.fill_planning(from_booking)
     from_rentable.fill_planning(to_booking)
+
 
 def swap_bookings_in_schedule(from_rentable, to_rentable, from_booking, to_booking):
-
     to_rentable.fill_planning(from_booking)
     from_rentable.fill_planning(to_booking)
+
 
 def swap_ships_in_schedule(from_berth, to_berth, from_vessel, to_vessel):
     # Back up the old values
@@ -145,8 +138,6 @@ def swap_ships_in_schedule(from_berth, to_berth, from_vessel, to_vessel):
     to_vessel.time_left = to_vessel.time_accepted + to_vessel.handling_time[from_berth.id]
 
 
-
 def daterange(start_date: datetime, end_date: datetime):
     for n in range(int((end_date - start_date).days)):
         yield start_date + timedelta(n)
-
