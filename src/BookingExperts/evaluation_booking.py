@@ -23,17 +23,6 @@ def evaluate(planning):
         added_gaps, potential_biggest_gap = evaluate_rentable(rentable)
         total_gaps += added_gaps
         biggest_gap = max(biggest_gap, potential_biggest_gap)
-
-        # schedule = [date for date in sorted(rentables[rentable].schedule.keys()) if
-        #             rentables[rentable].schedule[date] is not None]
-        # # print(len(schedule), schedule)
-        # for i in range(1, len(schedule)):
-        #     gap_size = schedule[i] - schedule[i - 1] - timedelta(days=1)
-        #
-        #     if gap_size >= timedelta(days=1):
-        #         total_gaps += 1
-        #         biggest_gap = max(biggest_gap, gap_size)
-
     return total_gaps, biggest_gap
 
 
@@ -50,19 +39,6 @@ def evaluate_rentable(rentable):
             biggest_gap = max(biggest_gap, gap_size)
 
     return total_gaps, biggest_gap
-
-
-def compute_utilization(solution):
-    berths = set([vessel.helped_by_berth for vessel in solution])
-    total_berth_slots_empty = 0
-    total_berth_handling = 0
-    for berth in berths:
-        for i in range(len(berth.schedule)):
-            if berth.schedule[i] == "":
-                total_berth_slots_empty += 1
-            elif berth.schedule[i] != "XX":
-                total_berth_handling += 1
-    return total_berth_handling, total_berth_handling + total_berth_slots_empty,
 
 
 # Print the evaluation of a solution.
