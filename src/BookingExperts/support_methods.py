@@ -106,19 +106,23 @@ def fill_class_dataset_with_new_data(old_class_set, new_class_set):
 
 def create_backup(bookings):
     backup_rentables = {}
-    backup_bookings = []
-
-    rentables = set([booking.rentable for booking in bookings])
-
-    for rentable in rentables:
-        backup_rentables[rentable.rentable_id] = rentable.deepcopy()
+    backup_bookings = {}
 
     for booking in bookings:
-        new_booking = booking.deepcopy()
-        new_booking.rentable = backup_rentables[booking.rentable.rentable_id]
-        backup_bookings.append(new_booking)
+        backup_bookings[booking.res_id] = booking.deepcopy()
 
-    return backup_bookings, list(backup_rentables.values())
+    rentables = set([booking.rentable for booking in backup_bookings.values()])
+
+    for rentable in rentables:
+        backup_rentables[rentable.rentable_id] = rentable
+        for date in rentable.schedule:
+            rentable.schedule[date] = backup_bookings[rentable.schedule[date].res_id]
+
+    for booking in backup_bookings.values():
+        booking.rentable = backup_rentables[booking.rentable.rentable_id]
+
+
+    return list(backup_bookings.values()), list(backup_rentables.values())
 
 
 def fill_rentable_dataset_with_new_data(old_rentable_set, new_rentable_set):
