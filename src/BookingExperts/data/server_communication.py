@@ -9,6 +9,7 @@ from src.BookingExperts.operators import daterange
 
 _api_key = None
 _admin_id = None
+_channel_id = None
 headers = None
 date_format = '%Y-%m-%d'
 root = 'https://api.app.ut-evolve.bookingexperts.nl/v3/administrations'
@@ -16,6 +17,7 @@ temporary_ids = ['92076', '92077', '92078', '92079', '92080']
 original_ids = ['90720', '90721', '90722', '90723', '90724']
 _bookings = None
 _rentables = None
+today = datetime(year=2022, month=5, day=17)
 
 
 def get_bookings() -> [Booking]:
@@ -51,12 +53,13 @@ def get_bookings() -> [Booking]:
 
                 fixed = reservation_data['attributes']['fixed_rentable']
                 cancelled = booking_data['attributes']['state'] == 'cancelled'
+                cant_be_moved = fixed or (start_date <= today <= end_date)
 
                 rentable_id = reservation_data['relationships']['rentable_identity']['data']['id']
                 rentable = _rentables[rentable_id]
 
                 booking = Booking(reservation_id, start_date, end_date, rentable_type, rentable, fixed,
-                                  cancelled=cancelled)
+                                  cancelled=cancelled, cant_be_moved=cant_be_moved)
 
                 if fixed:
                     booking.placed = True
@@ -121,11 +124,42 @@ def update_multiple_booking_rentables(bookings: [Booking]):
         update_booking_rentable(booking)
 
 
-def post_booking(booking):
-    address = f'{root}/{_admin_id}/reservations'
+def post_booking(booking: Booking):
+    address = f'{root}/{_admin_id}/channels/{_channel_id}/reservations'
+    params = {'allow_reservations_in_the_past': True}
 
+    data = {
+        "data": {
+            "type": "reservation",
+            "attributes": {
+                "start_date": booking.start_date.strftime(date_format),
+                "end_date": booking.end_date.strftime(date_format),
+                "guest_group": {
+                    "adults": 1
+                },
+                "fixed_rentable": booking.fixed
+            },
+            "relationships": {
+                "category": {
+                    "data": {
+                        "id": booking.rentable.type,
+                        "type": "category"
+                    }
+                },
+                "rentable_identity": {
+                    "data": {
+                        "id": booking.rentable.rentable_id,
+                        "type": "rentable_identity"
+                    }
+                }
+            }
+        }
+    }
 
-    pass
+    request = requests.post(address, headers=headers, params=params, json=data)
+
+    if request.status_code != 201:
+        raise AttributeError(request.json()['errors'][0]['detail'])
 
 
 def get_rentables() -> {str, Rentable}:
@@ -231,14 +265,15 @@ def main():
     # print(len(_bookings))
 
     # for rentable in _rentables.values():
-        # print(rentable)
-        # print(rentable.get_agenda_periods())
+    # print(rentable)
+    # print(rentable.get_agenda_periods())
 
 
 def initialize():
-    global _api_key, _admin_id, headers
+    global _api_key, _admin_id, _channel_id, headers
     _api_key = sys.argv[1]  # the api-key should be passed as a program argument
     _admin_id = sys.argv[2]  # the administration id should be passed as a program argument
+    _channel_id = sys.argv[3]
     headers = {'Accept': 'application/vnd.api+json', 'x-api-key': _api_key}
 
 
