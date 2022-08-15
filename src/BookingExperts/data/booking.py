@@ -1,9 +1,10 @@
 import copy
+from datetime import datetime
 
 
 class Booking:
-    def __init__(self, reservation_id, start_date, end_date, rentable_type, rentable=None,
-                 fixed=False, cancelled=False, placed=False):
+    def __init__(self, reservation_id, start_date: datetime, end_date: datetime, rentable_type, rentable=None,
+                 fixed=False, cancelled=False, placed=False, cant_be_moved=False):
         self.res_id = int(reservation_id)
         self.start_date = start_date
         self.end_date = end_date
@@ -13,6 +14,7 @@ class Booking:
         self.fixed = fixed
         self.cancelled = cancelled
         self.rentable_type = rentable_type
+        self.cant_be_moved = cant_be_moved
 
     def stay_start(self, rentable):
         self.rentable = rentable
@@ -21,7 +23,7 @@ class Booking:
         self.fixed = fixed
 
     def place_rentable(self, placed):
-        self.placed = placed or self.fixed
+        self.placed = placed or self.cant_be_moved
 
     def check_end(self, current_day):
         if current_day == self.start_date + self.length:
@@ -35,6 +37,7 @@ class Booking:
 
     def __repr__(self) -> str:
         return str(self)
+
     #
     # def __deepcopy__(self, memodict={}):
     #     new_booking = Booking(self.booking_id, self.start_date, self.end_date, self.rentable_type, self.booking_id, self.rentable.deepcopy())
