@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import csv
 import time
 
 from evaluation_booking import evaluate, visualize, visualize_original_graph
@@ -11,12 +12,13 @@ def run_vns(bookings, rentables):
     for rentable_type in get_rentable_types():
         bookings_by_type = filter_bookings_on_type(rentable_type, bookings)
         gaps, max_gap = evaluate(bookings_by_type)
+        # visualize_original_graph(bookings_by_type)
         heuristic_gapcount, heuristic_max_gap, heuristic_bookings = variable_neighbourhood_search(10, gaps, max_gap, bookings_by_type)
+
         visualize(heuristic_bookings)
 
 if __name__ == "__main__":
     start_time = time.time()
-    file_name = "scenario_BE.txt"
     bookings = get_bookings()
     rentables = list(get_rentables().values())
     run_vns(bookings, rentables)

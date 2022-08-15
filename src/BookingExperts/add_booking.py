@@ -1,3 +1,4 @@
+import math
 import time
 from datetime import datetime, timedelta
 
@@ -13,6 +14,9 @@ rentable_types = comm.get_rentable_types()
 # rentables = list(comm.filter_rentables_on_type(rentable_types[0]).values)[:5]
 rentables = comm.filter_rentables_on_type(rentable_types[0])[:5]
 bookings = comm.filter_bookings_on_type(rentable_types[0])
+
+rentable_amount = len(rentables)
+recursive_depth = math.log(500, rentable_amount - 1).__floor__()
 
 
 def check_booking(new_booking: Booking):
@@ -30,7 +34,7 @@ def check_booking(new_booking: Booking):
                 return False, None
 
     gaps, biggest_gap = evaluate.evaluate(bookings)
-    new_situation = descent.get_best_swap_descent(gaps, biggest_gap, new_booking, bookings, 0)
+    new_situation = descent.get_best_swap_descent(gaps, biggest_gap, new_booking, bookings, recursive_depth+1)
 
     if new_situation is None:
         return False, None

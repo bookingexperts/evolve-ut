@@ -95,7 +95,7 @@ def visualize_original_graph(bookings):
         if booking1.start_date <= booking2.start_date < booking1.end_date or booking2.start_date <= booking1.start_date < booking2.end_date:
             network.add_edge(booking1, booking2)
     fig = plt.figure(figsize=(30, 30))
-    nx.draw_networkx(network, with_labels=True)
+    nx.draw_networkx(network, with_labels=False)
     plt.show()
 
 

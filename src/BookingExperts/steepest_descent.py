@@ -1,3 +1,5 @@
+import math
+
 from evaluation_booking import evaluate
 from support_methods import *
 from operators import *
@@ -11,7 +13,11 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
     current_best_gapcount = objective_gap_count
     current_best_max_gap = objective_max_gap
     original_bookings = all_bookings
-    current_best_solution_bookings = create_backup_solution_bookings(original_bookings)
+    current_best_solution_bookings, rentables = create_backup(original_bookings)
+    rentable_amount = len(rentables)
+    recursive_depth = round(math.log(500, rentable_amount-1), 0)
+    print(recursive_depth)
+
 
     for from_booking_iterate in all_bookings:
         # print("Branch: move", from_booking_iterate.res_id, "to different rentable")
@@ -23,7 +29,7 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
         temp_rentable.remove_from_planning(from_booking)
         recursive_answer = get_best_swap_descent(current_best_gapcount, current_best_max_gap, from_booking,
                                                  temp_bookings,
-                                                 1)
+                                                 recursive_depth)
 
         temp_bookings.append(from_booking)
         plan_booking(temp_rentable, from_booking)
@@ -52,7 +58,7 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
 
 
 def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remaining_bookings, depth):
-    if depth > 4:
+    if depth < 1:
         return None
     current_best_gapcount = objective_gaps
     current_best_max_gap = objective_max_gap
@@ -95,7 +101,7 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
 
             for booking in conflicts[conflict]:
                 recursive_answer = get_best_swap_descent(current_best_gapcount, current_best_max_gap, booking,
-                                                         temp_temp_bookings, depth + 1)
+                                                         temp_temp_bookings, depth - 1)
                 if recursive_answer is None:
                     answer_possible = False
                     break
