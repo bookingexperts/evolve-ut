@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 # Get all rentables that have an ability to be swapped, even with conflict.
 def extended_get_conflicts(from_rentable, all_rentables, from_booking):
     conflicts = {}
-    for rentable in all_rentables:
+    for rentable in all_rentables.values():
         if from_rentable is not None and rentable.rentable_id == from_rentable.rentable_id:
             continue
         booking_conflicts = get_bookings_in_schedule(rentable, from_booking.start_date, from_booking.end_date)

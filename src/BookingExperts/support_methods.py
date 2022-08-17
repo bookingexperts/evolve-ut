@@ -1,13 +1,11 @@
 # Create a set of vessels with the characteristics of the other solution
+import copy
 import itertools
 import random
 
 
 def create_backup_solution_bookings(set_of_bookings):
-    copy_of_bookings = []
-    for booking in set_of_bookings:
-        copy_of_bookings.append(booking.deepcopy())
-    return copy_of_bookings
+    return copy.deepcopy(set_of_bookings)
 
 
 def create_backup_solution_rentable(set_of_rentables):
@@ -18,16 +16,14 @@ def create_backup_solution_rentable(set_of_rentables):
 
 
 def fill_class_dataset_with_new_data(old_class_set, new_class_set):
-    for old_item in old_class_set:
-        for new_item in new_class_set:
-            if old_item.res_id == new_item.res_id:
-                old_item.start_date = new_item.start_date
-                old_item.end_date = new_item.end_date
-                old_item.rentable.schedule = new_item.rentable.schedule
-                old_item.rentable_type = new_item.rentable_type
-                old_item.fixed = new_item.fixed
-                old_item.placed = new_item.placed
-                break
+    for item in old_class_set:
+        old_class_set[item].start_date = new_class_set[item].start_date
+        old_class_set[item].end_date = new_class_set[item].end_date
+        old_class_set[item].rentable.schedule = new_class_set[item].rentable.schedule
+        old_class_set[item].rentable_type = new_class_set[item].rentable_type
+        old_class_set[item].fixed = new_class_set[item].fixed
+        old_class_set[item].placed = new_class_set[item].placed
+        old_class_set[item].cant_be_moved = old_class_set[item].cant_be_moved
     return old_class_set
 
 
@@ -52,15 +48,28 @@ def create_backup(bookings):
     return list(backup_bookings.values()), list(backup_rentables.values())
 
 
+def create_backup_new(bookings):
+    backup_bookings = copy.deepcopy(bookings)
+    rentables = { booking.rentable.rentable_id : booking.rentable for booking in backup_bookings.values() }
+
+
+
+    for rentable in rentables.values():
+        for date in rentable.schedule:
+            rentable.schedule[date] = backup_bookings[rentable.schedule[date].res_id]
+
+    for booking in backup_bookings.values():
+        booking.rentable = rentables[booking.rentable.rentable_id]
+
+    return backup_bookings, rentables
+
+
 def fill_rentable_dataset_with_new_data(old_rentable_set, new_rentable_set):
-    for old_item in old_rentable_set:
-        for new_item in new_rentable_set:
-            if old_item.rentable_id == new_item.rentable_id:
-                old_item.opening_date = new_item.opening_date
-                old_item.closing_date = new_item.closing_date
-                old_item.type = new_item.type
-                old_item.schedule = new_item.schedule
-                break
+    for item in old_rentable_set:
+        old_rentable_set[item].opening_date = new_rentable_set[item].opening_date
+        old_rentable_set[item].closing_date = new_rentable_set[item].closing_date
+        old_rentable_set[item].type = new_rentable_set[item].type
+        old_rentable_set[item].schedule = new_rentable_set[item].schedule
     return old_rentable_set
 
 

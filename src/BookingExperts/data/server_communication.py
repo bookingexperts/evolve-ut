@@ -17,7 +17,7 @@ temporary_ids = ['92076', '92077', '92078', '92079', '92080']
 original_ids = ['90720', '90721', '90722', '90723', '90724']
 _bookings = None
 _rentables = None
-today = datetime(year=2022, month=5, day=17)
+today = datetime(year=2022, month=5, day=16)
 
 
 def get_bookings() -> [Booking]:
@@ -125,6 +125,7 @@ def update_multiple_booking_rentables(bookings: [Booking]):
 
 
 def post_booking(booking: Booking):
+    _channel_id = sys.argv[3]
     address = f'{root}/{_admin_id}/channels/{_channel_id}/reservations'
     params = {'allow_reservations_in_the_past': True}
 
@@ -273,7 +274,6 @@ def initialize():
     global _api_key, _admin_id, _channel_id, headers
     _api_key = sys.argv[1]  # the api-key should be passed as a program argument
     _admin_id = sys.argv[2]  # the administration id should be passed as a program argument
-    _channel_id = sys.argv[3]
     headers = {'Accept': 'application/vnd.api+json', 'x-api-key': _api_key}
 
 
