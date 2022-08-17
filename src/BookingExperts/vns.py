@@ -23,7 +23,6 @@ def variable_neighbourhood_search(nr_of_iterations, objective_gapcount, objectiv
 
         extended_gapcount, extended_max_gap, extended_bookings = extended_steepest_descent(best_gapcount, best_max_gap, best_bookings)
 
-
         if extended_bookings is None or (extended_gapcount, extended_max_gap) == (best_gapcount, best_max_gap):
             # writer.writerow([extended_gapcount, extended_max_gap, round(time.time() - start_time, 2)])
             # file.close()

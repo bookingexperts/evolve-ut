@@ -8,6 +8,8 @@ from operators import *
 # For which the highest cost improvement is chosen, and returned.
 # This highest cost improvement is found by recursively calling get_best_swap_descent()
 
+# iterations = 0
+
 
 def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookings):
     current_best_gapcount = objective_gap_count
@@ -54,10 +56,13 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
                 #             break
 
                 current_best_solution_bookings = create_backup(recursive_answer)[0]
+    # print('iterations:', iterations)
     return current_best_gapcount, current_best_max_gap, current_best_solution_bookings
 
 
 def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remaining_bookings, depth):
+    # global iterations
+    # iterations += 1
     if depth < 1:
         return None
     current_best_gapcount = objective_gaps

@@ -37,7 +37,7 @@ def get_backup_bookings():
 def main():
     # create_backup()
     bookings = get_backup_bookings()
-    rentable_types = get_rentable_types()
+    rentable_types = get_rentable_types()[:1]
 
     for rentable_type in rentable_types:
         filtered_bookings = filter_bookings_on_type(rentable_type, bookings)
