@@ -20,7 +20,7 @@ class Rentable:
         self.old_schedule = self.schedule.copy()
 
     def check_compatibility(self, booking: Booking):
-        if (booking.fixed and booking.rentable != self.rentable_id) or \
+        if (booking.fixed and booking.rentable.rentable_id != self.rentable_id) or \
                 booking.start_date < self.opening_date or (
                 self.closing_date is not None and booking.end_date >= self.closing_date):
             return False
@@ -52,6 +52,15 @@ class Rentable:
 
         return result
 
+    def get_agenda_periods_in_period(self, start_date, end_date):
+        result = []
+
+        for date in daterange(start_date, end_date):
+            if date in self.schedule and self.schedule[date] is not None and self.schedule[date] not in result:
+                result.append(self.schedule[date])
+
+        return result
+
     def __repr__(self) -> str:
         return f'{{id: {self.rentable_id}, opening_date: {self.opening_date}, closing_date: {self.closing_date}, ' \
                f'type: {self.type}}}'
@@ -59,7 +68,8 @@ class Rentable:
     def get_gaps(self, start_date) -> [(datetime, datetime)]:
         result = []
         minimum = max(start_date, self.opening_date)
-        occupied_dates = [period for period in self.get_agenda_periods() if period.start_date >= minimum]
+        occupied_dates = sorted([period for period in self.get_agenda_periods() if period.start_date >= minimum],
+                                key=lambda period: period.start_date)
         # print(occupied_dates)
         if len(occupied_dates) == 0:
             return []

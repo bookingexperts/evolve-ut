@@ -44,7 +44,6 @@ def create_backup(bookings):
     for booking in backup_bookings.values():
         booking.rentable = backup_rentables[booking.rentable.rentable_id]
 
-
     return list(backup_bookings.values()), list(backup_rentables.values())
 
 
@@ -77,4 +76,3 @@ def plan_booking(rentable, booking):
     rentable.fill_planning(booking)
     booking.stay_start(rentable)
     # print("Booking", booking.res_id, "placed for", booking.start_date, "until", booking.end_date, "on rentable", rentable.rentable_id, "\n")
-

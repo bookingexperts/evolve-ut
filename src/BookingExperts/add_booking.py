@@ -16,7 +16,8 @@ rentables = comm.filter_rentables_on_type(rentable_types[0])[:5]
 bookings = comm.filter_bookings_on_type(rentable_types[0])
 
 rentable_amount = len(rentables)
-recursive_depth = math.log(500, rentable_amount - 1).__floor__()
+recursive_depth = math.floor(math.log(500, rentable_amount - 1))
+print(recursive_depth)
 
 
 def check_booking(new_booking: Booking):
@@ -24,67 +25,127 @@ def check_booking(new_booking: Booking):
         if rentable.check_compatibility(new_booking):
             return True, None
 
-    for date in daterange(new_booking.start_date, new_booking.end_date):
+    if not check_date_range(new_booking.start_date, new_booking.end_date, rentables):
+        return False, None
+
+    gaps, biggest_gap = evaluate.evaluate(bookings)
+    new_situation = descent.get_best_swap_descent(gaps, biggest_gap, new_booking, bookings, recursive_depth + 1)
+
+    return new_situation is not None, new_situation
+
+
+def check_fixed_booking(new_booking: Booking):
+    if new_booking.rentable.check_compatibility(new_booking):
+        return True, None
+    else:
+        for date in daterange(new_booking.start_date, new_booking.end_date):
+            if date in new_booking.rentable.schedule and new_booking.rentable.schedule[date].cant_be_moved:
+                print('fixed booking already exists')
+                return False, None
+
+        if not check_date_range(new_booking.start_date, new_booking.end_date, rentables):
+            return False, None
+
+        conflicts = new_booking.rentable.get_agenda_periods_in_period(new_booking.start_date, new_booking.end_date)
+        new_situation = [booking for booking in bookings if booking not in conflicts]
+        for conflict in conflicts:
+            conflict.rentable.remove_from_planning(conflict)
+
+        print(conflicts)
+        print(new_situation)
+
+        new_booking.rentable.fill_planning(new_booking)
+        new_situation.append(new_booking)
+
+        for conflict in conflicts:
+            gaps, biggest_gap = evaluate.evaluate(new_situation)
+            new_situation = descent.get_best_swap_descent(gaps, biggest_gap, conflict, new_situation,
+                                                          recursive_depth + 1)
+            if new_situation is None:
+                break
+            # print(new_situation)
+
+        return new_situation is not None, new_situation
+
+
+def check_date_range(start_date, end_date, rentables):
+    for date in daterange(start_date, end_date):
         nr_obstacles = 0
         for rentable in rentables:
-            if date in rentable.schedule:
+            if date in rentable.schedule and rentable.schedule[date] is not None:
                 nr_obstacles += 1
 
             if nr_obstacles == len(rentables):
-                return False, None
+                return False
+    return True
 
-    gaps, biggest_gap = evaluate.evaluate(bookings)
-    new_situation = descent.get_best_swap_descent(gaps, biggest_gap, new_booking, bookings, recursive_depth+1)
 
-    if new_situation is None:
-        return False, None
-    else:
-        return True, new_situation
+def plan_booking(new_booking, new_schedule=None):
+    if new_schedule is None:
+        for rentable in rentables:
+            if (new_booking.start_date - timedelta(days=1) in rentable.schedule and
+                rentable.schedule[new_booking.start_date - timedelta(days=1)] is not None) and \
+                    (new_booking.end_date + timedelta(days=1) in rentable.schedule and
+                     rentable.schedule[new_booking.end_date + timedelta(days=1)] is not None):
+
+                for date in daterange(new_booking.start_date, new_booking.end_date):
+                    if date in rentable.schedule and rentable.schedule[date] is not None:
+                        break
+                else:
+                    new_booking.rentable = rentable
+                    rentable.fill_planning(new_booking)
+                    return None
+
+        if new_schedule is None:
+            gaps, biggest_gap = evaluate.evaluate(bookings)
+            new_schedule = descent.get_best_swap_descent(gaps, biggest_gap, new_booking, bookings, recursive_depth + 1)
+
+    return new_schedule
 
 
 def main():
-    # while True:
-    #     start_date = input('Enter your date of arrival (dd-mm-yyyy): ')
-    #     try:
-    #         start_date = datetime.strptime(start_date, date_format)
-    #         break
-    #     except ValueError:
-    #         pass
-    #
-    # while True:
-    #     end_date = input('Enter your date of leaving (dd-mm-yyyy): ')
-    #     try:
-    #         end_date = datetime.strptime(end_date, date_format)
-    #         break
-    #     except ValueError:
-    #         pass
+    start_date = datetime(year=2022, month=6, day=9)
+    end_date = datetime(year=2022, month=6, day=18)
 
-    # start_date = datetime(year=2022, month=6, day=3)  # possible with moving other obstacles
-    # end_date = datetime(year=2022, month=6, day=12)   # takes about 3 seconds
-
-    # start_date = datetime(year=2022, month=5, day=22) # no obstacles
-    # end_date = datetime(year=2022, month=5, day=27)
-
-    # start_date = datetime(year=2022, month=5, day=27) # not possible
-    # end_date = datetime(year=2022, month=6, day=1)
-
-    start_date = datetime(year=2022, month=6, day=17)
-    end_date = datetime(year=2022, month=7, day=2)
-
-    new_booking = Booking(0, start_date, end_date, rentable_types[0])
+    new_booking = Booking(-1, start_date, end_date, rentable_types[0])
 
     start_time = time.time()
     possible, new_situation = check_booking(new_booking)
     end_time = time.time()
     print(possible)
-    if new_situation is not None:
-        print('New schedule')
-        evaluate.visualize(new_situation)
-    elif possible:
-        print('Not needed to make a new schedule')
+
+    if possible:
+        new_schedule = plan_booking(new_booking, new_situation)
+        if new_schedule is None:
+            comm.post_booking(new_booking)
+        else:
+            evaluate.visualize(new_schedule)
+
+            comm.update_multiple_booking_rentables([booking for booking in new_schedule if booking.res_id != -1])
+            new_booking = [booking for booking in new_schedule if booking.res_id == -1][0]
+
+            comm.post_booking(new_booking)
 
     print('Solution found in:', end_time - start_time, 's')
 
 
+def fixed_booking():
+    start_date = datetime(year=2022, month=6, day=20)
+    end_date = datetime(year=2022, month=6, day=22)
+    new_booking = Booking(-1, start_date, end_date, rentable_types[0], rentable=rentables[4], fixed=True)
+    # print('checking booking')
+    possible, new_situation = check_fixed_booking(new_booking)
+    print(possible)
+    #
+    # if not possible:
+    #     print('not possible')
+    #     evaluate.visualize(bookings)
+
+    if new_situation is not None:
+        print('possible')
+        evaluate.visualize(new_situation)
+
+
 if __name__ == '__main__':
-    main()
+    # main()
+    fixed_booking()

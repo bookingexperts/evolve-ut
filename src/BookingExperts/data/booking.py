@@ -9,12 +9,12 @@ class Booking:
         self.start_date = start_date
         self.end_date = end_date
         self.length = end_date - start_date
-        self.placed = placed
+        self.placed = placed or fixed
         self.rentable = rentable
         self.fixed = fixed
         self.cancelled = cancelled
         self.rentable_type = rentable_type
-        self.cant_be_moved = cant_be_moved
+        self.cant_be_moved = cant_be_moved or fixed
 
     def stay_start(self, rentable):
         self.rentable = rentable

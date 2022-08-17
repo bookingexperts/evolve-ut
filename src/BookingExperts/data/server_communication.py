@@ -12,7 +12,7 @@ _admin_id = None
 _channel_id = None
 headers = None
 date_format = '%Y-%m-%d'
-root = 'https://api.app.ut-evolve.bookingexperts.nl/v3/administrations'
+root = 'https://api.app.ut-evolve.bookingexperts.nl/v3'
 temporary_ids = ['92076', '92077', '92078', '92079', '92080']
 original_ids = ['90720', '90721', '90722', '90723', '90724']
 _bookings = None
@@ -31,7 +31,7 @@ def get_bookings() -> [Booking]:
         _rentables = get_rentables()
 
     params = {'include': 'reservations', 'filter[state]': 'confirmed'}
-    address = f'{root}/{_admin_id}/bookings'
+    address = f'{root}/administrations/{_admin_id}/bookings'
     request = requests.get(address, params=params, headers=headers)
 
     _bookings = []
@@ -82,6 +82,13 @@ def filter_bookings_on_type(rentable_type, bookings=None) -> [Booking]:
     return [booking for booking in bookings if booking.rentable_type == rentable_type]
 
 
+def get_bookings_in_date_range(start_date, end_date, bookings=None):
+    if bookings is None:
+        bookings = get_bookings()
+
+    return [booking for booking in bookings if booking.start_date >= start_date and booking.end_date <= end_date]
+
+
 def update_booking_rentable(booking, rentable_id=None):
     if rentable_id is None:
         rentable_id = booking.rentable.rentable_id
@@ -104,7 +111,7 @@ def update_booking_rentable(booking, rentable_id=None):
         }
     }
 
-    address = f'{root}/{_admin_id}/reservations/{booking.res_id}'
+    address = f'{root}/administrations/{_admin_id}/reservations/{booking.res_id}'
     request = requests.patch(address, headers=headers, json=data)
 
     if request.status_code != 200:
@@ -126,8 +133,8 @@ def update_multiple_booking_rentables(bookings: [Booking]):
 
 def post_booking(booking: Booking):
     _channel_id = sys.argv[3]
-    address = f'{root}/{_admin_id}/channels/{_channel_id}/reservations'
-    params = {'allow_reservations_in_the_past': True}
+    address = f'{root}/channels/{_channel_id}/reservations'
+    params = {'allow_reservations_in_the_past': 'true'}
 
     data = {
         "data": {
@@ -168,7 +175,7 @@ def get_rentables() -> {str, Rentable}:
     if _rentables is not None:
         return _rentables
 
-    address = f'{root}/{_admin_id}/rentables'
+    address = f'{root}/administrations/{_admin_id}/rentables'
     request = requests.get(address, headers=headers)
 
     _rentables = {}
@@ -204,7 +211,7 @@ def set_blocked_periods(rentables: {str, Rentable}):
     params = {'filter[type]': 'MaintenanceAgendaPeriod', "include": "rentable"}
     # print(rentables)
 
-    address = f'{root}/{_admin_id}/agenda_periods'
+    address = f'{root}/administrations/{_admin_id}/agenda_periods'
     request = requests.get(address, headers=headers, params=params)
 
     while True:
@@ -232,7 +239,7 @@ def set_blocked_periods(rentables: {str, Rentable}):
 
 
 def get_rentable_types():
-    address = f'{root}/{_admin_id}/categories'
+    address = f'{root}/administrations/{_admin_id}/categories'
     request = requests.get(address, headers=headers)
 
     types = []
