@@ -1,3 +1,7 @@
+"""
+This file handles communicating with the API
+"""
+
 import sys
 from datetime import datetime
 
@@ -9,7 +13,6 @@ from src.BookingExperts.operators import daterange
 
 _api_key = None
 _admin_id = None
-_channel_id = None
 headers = None
 date_format = '%Y-%m-%d'
 root = 'https://api.app.ut-evolve.bookingexperts.nl/v3'
@@ -130,8 +133,8 @@ def update_multiple_booking_rentables(bookings: [Booking]):
 
 
 def post_booking(booking: Booking):
-    _channel_id = sys.argv[3]
-    address = f'{root}/channels/{_channel_id}/reservations'
+    channel_id = sys.argv[3]
+    address = f'{root}/channels/{channel_id}/reservations'
     params = {'allow_reservations_in_the_past': 'true'}
 
     data = {
@@ -194,7 +197,6 @@ def get_rentables() -> {str, Rentable}:
 
             rentable = Rentable(start_date, end_date, rentable_id, rentable_type)
             _rentables[rentable_id] = rentable
-            # print(rentable)
 
         if links['next'] is None:
             break
@@ -276,7 +278,7 @@ def main():
 
 
 def initialize():
-    global _api_key, _admin_id, _channel_id, headers
+    global _api_key, _admin_id, headers
     _api_key = sys.argv[1]  # the api-key should be passed as a program argument
     _admin_id = sys.argv[2]  # the administration id should be passed as a program argument
     headers = {'Accept': 'application/vnd.api+json', 'x-api-key': _api_key}

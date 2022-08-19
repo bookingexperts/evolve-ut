@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
-import csv
 import time
 
-from evaluation_booking import evaluate, visualize, visualize_original_graph
-from src.BookingExperts.bruteforce import bruteforce
-from src.BookingExperts.data.server_communication import get_bookings, get_rentables, get_rentable_types, \
-    filter_bookings_on_type, filter_rentables_on_type, update_multiple_booking_rentables
+from evaluation_booking import evaluate, visualize
+from src.BookingExperts.data.server_communication import get_bookings, get_rentable_types, \
+    filter_bookings_on_type, update_multiple_booking_rentables
 from vns import optimize
 
 
