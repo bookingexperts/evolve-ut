@@ -12,7 +12,7 @@ def run_vns(bookings):
         begin_time = time.time()
         bookings_by_type = filter_bookings_on_type(rentable_type, bookings)
         # visualize_original_graph(bookings_by_type)
-        bookings_by_type_dict = { booking.res_id : booking for booking in bookings_by_type }
+        bookings_by_type_dict = {booking.res_id: booking for booking in bookings_by_type}
         gaps, max_gap = evaluate(bookings_by_type_dict)
 
         heuristic_gapcount, heuristic_max_gap, heuristic_bookings = optimize(gaps, max_gap, bookings_by_type_dict)
@@ -21,6 +21,7 @@ def run_vns(bookings):
         visualize(heuristic_bookings)
         print(f"Computation time for type {rentable_type}:", round(total_time, 2), "seconds")
         update_multiple_booking_rentables(list(heuristic_bookings.values()))
+
 
 if __name__ == "__main__":
     start_time = time.time()

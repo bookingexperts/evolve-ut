@@ -4,6 +4,7 @@ from evaluation_booking import evaluate
 from support_methods import *
 from operators import *
 
+
 # extended_steepest_descent() is a function that loops through all bookings in given schedule through (all_bookings)
 # For which the highest cost improvement is chosen, and returned.
 # This highest cost improvement is found by recursively calling get_best_swap_descent()
@@ -15,10 +16,9 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
     original_bookings = all_bookings
     current_best_solution_bookings, rentables = create_backup_new(original_bookings)
     rentable_amount = len(rentables)
-    recursive_depth = round(math.log(500, rentable_amount-1), 0)
+    recursive_depth = round(math.log(500, rentable_amount - 1), 0)
     if recursive_depth < 2:
         recursive_depth = 2
-
 
     for from_booking_iterate in all_bookings:
         if all_bookings[from_booking_iterate].cant_be_moved:
@@ -144,4 +144,3 @@ def get_best_swap_descent(objective_gaps, objective_max_gap, from_booking, remai
         return new_solution
     else:
         return None
-

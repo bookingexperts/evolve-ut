@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+
 # Get all rentables that have an ability to be swapped, even with conflict.
 def extended_get_conflicts(from_rentable, all_rentables, from_booking):
     conflicts = {}

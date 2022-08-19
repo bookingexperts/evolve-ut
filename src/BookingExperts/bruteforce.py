@@ -5,7 +5,6 @@ from operators import *
 
 
 def bruteforce(all_bookings):
-
     temp_bookings, temp_rentables = create_backup(all_bookings)
 
     for booking in temp_bookings:
@@ -16,10 +15,7 @@ def bruteforce(all_bookings):
     if recursive_solution is not None:
         visualize(recursive_solution)
 
-    
-
     print(temp_rentables)
-
 
 
 def place(best_gapcount, best_max_gap, to_place, bookings):
@@ -31,9 +27,7 @@ def place(best_gapcount, best_max_gap, to_place, bookings):
     copy_to_place = to_place.deepcopy()
     conflicts = extended_get_conflicts(None, temp_rentables, to_place)
 
-
     new_solution = None
-
 
     for conflict in conflicts:
         possible_solution = None
@@ -51,7 +45,10 @@ def place(best_gapcount, best_max_gap, to_place, bookings):
             if to_place == bookings[-1]:
                 recursive_answer = temp_temp_bookings
             else:
-                recursive_answer = place(best_gapcount, best_max_gap, [booking for booking in temp_temp_bookings if booking.res_id == bookings[bookings.index(to_place)+1].res_id][0], temp_temp_bookings)
+                recursive_answer = place(best_gapcount, best_max_gap, [booking for booking in temp_temp_bookings if
+                                                                       booking.res_id == bookings[
+                                                                           bookings.index(to_place) + 1].res_id][0],
+                                         temp_temp_bookings)
 
             if recursive_answer is not None:
                 answer_possible = True
@@ -65,11 +62,3 @@ def place(best_gapcount, best_max_gap, to_place, bookings):
                     visualize(recursive_answer)
 
     return new_solution
-
-
-
-
-
-
-
-

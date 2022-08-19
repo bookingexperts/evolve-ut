@@ -1,7 +1,6 @@
-import csv
 import time
 
-from evaluation_booking import evaluate, visualize
+from evaluation_booking import visualize
 from steepest_descent import extended_steepest_descent
 from support_methods import *
 

@@ -1,7 +1,5 @@
 # Create a set of vessels with the characteristics of the other solution
 import copy
-import itertools
-import random
 
 
 def create_backup_solution_bookings(set_of_bookings):
@@ -49,9 +47,7 @@ def create_backup(bookings):
 
 def create_backup_new(bookings):
     backup_bookings = copy.deepcopy(bookings)
-    rentables = { booking.rentable.rentable_id : booking.rentable for booking in backup_bookings.values() }
-
-
+    rentables = {booking.rentable.rentable_id: booking.rentable for booking in backup_bookings.values()}
 
     for rentable in rentables.values():
         for date in rentable.schedule:

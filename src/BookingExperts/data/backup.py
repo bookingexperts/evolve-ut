@@ -4,7 +4,6 @@ It stores the reservation id, the rentable it was linked to, whether or not it i
 the category and start- and end date.
 """
 
-
 from src.BookingExperts.data.server_communication import *
 
 date_format = '%Y-%m-%d'
