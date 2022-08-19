@@ -16,6 +16,8 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
     current_best_solution_bookings, rentables = create_backup_new(original_bookings)
     rentable_amount = len(rentables)
     recursive_depth = round(math.log(500, rentable_amount-1), 0)
+    if recursive_depth < 2:
+        recursive_depth = 2
 
 
     for from_booking_iterate in all_bookings:
@@ -32,7 +34,7 @@ def extended_steepest_descent(objective_gap_count, objective_max_gap, all_bookin
 
         recursive_answer = get_best_swap_descent(current_best_gapcount, current_best_max_gap, from_booking,
                                                  temp_bookings,
-                                                 recursive_depth-1)
+                                                 recursive_depth)
 
         temp_bookings[from_booking_iterate] = from_booking
         plan_booking(temp_rentable, from_booking)
