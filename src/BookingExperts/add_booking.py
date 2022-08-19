@@ -11,7 +11,6 @@ from src.BookingExperts.operators import daterange
 date_format = '%d-%m-%Y'
 
 rentable_types = comm.get_rentable_types()
-# rentables = list(comm.filter_rentables_on_type(rentable_types[0]).values)[:5]
 rentables = comm.filter_rentables_on_type(rentable_types[0])[:5]
 bookings = comm.filter_bookings_on_type(rentable_types[0])
 
@@ -63,7 +62,6 @@ def check_fixed_booking(new_booking: Booking):
                                                           recursive_depth + 1)
             if new_situation is None:
                 break
-            # print(new_situation)
 
         return new_situation is not None, new_situation
 
@@ -133,13 +131,8 @@ def fixed_booking():
     start_date = datetime(year=2022, month=6, day=20)
     end_date = datetime(year=2022, month=6, day=22)
     new_booking = Booking(-1, start_date, end_date, rentable_types[0], rentable=rentables[4], fixed=True)
-    # print('checking booking')
     possible, new_situation = check_fixed_booking(new_booking)
     print(possible)
-    #
-    # if not possible:
-    #     print('not possible')
-    #     evaluate.visualize(bookings)
 
     if new_situation is not None:
         print('possible')

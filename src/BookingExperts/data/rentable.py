@@ -11,7 +11,6 @@ class NotAvailableError(Exception):
 
 class Rentable:
     def __init__(self, opening_date, closing_date, rentable_id, rentable_type):
-        # self.id = Rentable.new_id() % nr_rentables
         self.rentable_id = rentable_id
         self.opening_date = opening_date
         self.closing_date = closing_date
@@ -35,7 +34,6 @@ class Rentable:
             self.schedule[date] = booking
 
     def remove_from_planning(self, booking: Booking):
-        # print("Removing booking", booking.res_id, "from ", self.id)
         for date in daterange(booking.start_date, booking.end_date):
             del self.schedule[date]
 
@@ -70,7 +68,6 @@ class Rentable:
         minimum = max(start_date, self.opening_date)
         occupied_dates = sorted([period for period in self.get_agenda_periods() if period.start_date >= minimum],
                                 key=lambda period: period.start_date)
-        # print(occupied_dates)
         if len(occupied_dates) == 0:
             return []
 
@@ -81,7 +78,6 @@ class Rentable:
             if occupied_dates[i].start_date - occupied_dates[i - 1].end_date >= timedelta(days=1):
                 result.append((occupied_dates[i - 1].end_date, occupied_dates[i].start_date))
 
-        # print(self.rentable_id, result)
         return result
 
     def deepcopy(self):
@@ -98,11 +94,6 @@ class Rentable:
 
     def __ne__(self, other):
         return not self.__eq__(other)
-    #
-    # def __deepcopy__(self, memodict={}):
-    #     new_rentable = Rentable(self.opening_date, self.closing_date, self.rentable_id, self.type)
-    #     new_rentable.schedule = self.schedule.copy()
-    #     return new_rentable
 
 
 class BlockedPeriod:
