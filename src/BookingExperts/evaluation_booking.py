@@ -3,11 +3,7 @@ from datetime import datetime, timedelta
 
 import matplotlib.pyplot as plt
 import networkx as nx
-
-import src.BookingExperts.data.server_communication as comm
 from operators import daterange
-from src.booking_utils import fill_rentable_plannings
-
 
 def evaluate(planning, start_date=datetime(year=2022, month=5, day=16)):
     rentables = {booking.rentable.rentable_id: booking.rentable for booking in planning.values()}
@@ -80,12 +76,3 @@ def visualize_original_graph(bookings):
     fig = plt.figure(figsize=(30, 30))
     nx.draw_networkx(network, with_labels=False)
     plt.show()
-
-
-if __name__ == '__main__':
-    print('getting bookings')
-    category = comm.get_rentable_types()[0]
-    bookings = comm.filter_bookings_on_type(category)
-    fill_rentable_plannings(bookings)
-    print('evaluating bookings')
-    print(evaluate(bookings))

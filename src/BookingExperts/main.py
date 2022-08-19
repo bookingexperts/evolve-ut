@@ -28,6 +28,4 @@ if __name__ == "__main__":
     start_time = time.time()
     bookings = get_bookings()
     run_vns(bookings)
-    # run_pareto(file_name)
-    # run_beths_utilization(file_name)
     print("Total computation time: ", round(time.time() - start_time, 2), "seconds")
