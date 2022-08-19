@@ -6,7 +6,7 @@ from steepest_descent import extended_steepest_descent
 from support_methods import *
 
 
-def variable_neighbourhood_search(nr_of_iterations, objective_gapcount, objective_max_gap, all_bookings):
+def optimize(objective_gapcount, objective_max_gap, all_bookings):
     # filename = f'{str(list(all_bookings.values())[0].rentable.type)}_times'
     # file = open('C:/Users/barry/Documents/University/CS/Minor/study tour/CR/evolve-ut/src/BookingExperts/Benchmark/' + filename + '_5.csv', 'w')
     # writer = csv.writer(file)
