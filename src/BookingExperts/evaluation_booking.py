@@ -9,7 +9,7 @@ from operators import daterange
 from src.booking_utils import fill_rentable_plannings
 
 
-def evaluate(planning, start_date=datetime(year=2022, month=5, day=17)):
+def evaluate(planning, start_date=datetime(year=2022, month=5, day=16)):
     rentables = {booking.rentable.rentable_id: booking.rentable for booking in planning.values()}
     total_gaps = 0
     biggest_gap = timedelta()
@@ -21,7 +21,6 @@ def evaluate(planning, start_date=datetime(year=2022, month=5, day=17)):
             biggest_gap_of_gaps = max([gap[1] - gap[0] for gap in gaps])
         else:
             biggest_gap_of_gaps = timedelta()
-            print(rentable, rentable.schedule)
 
         total_gaps += added_gaps
         biggest_gap = max(biggest_gap, biggest_gap_of_gaps)

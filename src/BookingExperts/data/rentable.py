@@ -78,7 +78,7 @@ class Rentable:
             result.append((minimum, occupied_dates[0].start_date))
 
         for i in range(1, len(occupied_dates)):
-            if occupied_dates[i].start_date - occupied_dates[i - 1].end_date > timedelta(days=1):
+            if occupied_dates[i].start_date - occupied_dates[i - 1].end_date >= timedelta(days=1):
                 result.append((occupied_dates[i - 1].end_date, occupied_dates[i].start_date))
 
         # print(self.rentable_id, result)

@@ -7,6 +7,7 @@ from operators import *
 def bruteforce(all_bookings):
 
     temp_bookings, temp_rentables = create_backup(all_bookings)
+
     for booking in temp_bookings:
         booking.rentable.remove_from_planning(booking)
 
