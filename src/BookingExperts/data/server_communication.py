@@ -26,7 +26,6 @@ def get_bookings() -> [Booking]:
     if _bookings is not None:
         return _bookings
 
-    # print(_rentables)
     if _rentables is None:
         _rentables = get_rentables()
 
@@ -66,7 +65,6 @@ def get_bookings() -> [Booking]:
                 rentable.fill_planning(booking)
 
                 _bookings.append(booking)
-                # print(booking)
 
         if links['next'] is None:
             break
@@ -82,7 +80,7 @@ def filter_bookings_on_type(rentable_type, bookings=None) -> [Booking]:
     return [booking for booking in bookings if booking.rentable_type == rentable_type]
 
 
-def get_bookings_in_date_range(start_date, end_date, bookings=None):
+def get_bookings_in_date_range(start_date: datetime, end_date: datetime, bookings=None):
     if bookings is None:
         bookings = get_bookings()
 
